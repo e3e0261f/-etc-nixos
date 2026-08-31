@@ -1,0 +1,327 @@
+# Edit this configuration file to define what should be installed on
+# your system. Help is available in the configuration.nix(5) man page.
+
+{ config, pkgs, ... }:
+
+let
+  my-dae-assets = pkgs.stdenv.mkDerivation {
+    name = "my-dae-assets";
+    src = pkgs.fetchFromGitHub {
+      owner = "e3e0261f";
+      repo = "GEoIP-GEoSITE";
+      rev = "main";
+      sha256 = "sha256-RLCjV6Plxvog54vAk6w4pZtIUGk59WoolMuJDeHQQSE="; # 這裡填正確的 Hash
+    };
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/share/v2ray
+      cp $src/geoip.dat $out/share/v2ray/geoip.dat
+      cp $src/geosite.dat $out/share/v2ray/geosite.dat
+    '';
+  };
+in
+
+{
+  imports = [ 
+    ./hardware-configuration.nix
+  ];
+
+  # 1. 關閉 GNOME 內建的 SSH 代理，避免與 GnuPG 衝突
+  services.gnome.gcr-ssh-agent.enable = false;
+
+  # --- 1. 開啟內核 IP 轉發 (透明代理必備) ---
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+    "net.ipv6.conf.all.forwarding" = 1;
+  };
+
+  # 1. 啟用 dae 服務
+  services.dae = {
+    enable = true;
+    assets = [ my-dae-assets ];
+    config = ''
+      global {
+          allow_insecure: false
+          so_mark_from_dae: 0
+
+	  # 這裡「必須」指定你的真實網卡名稱
+          # 如果你是筆電上網，通常是 wlp... 
+          lan_interface: wlp8s0 
+          wan_interface: auto
+
+	  log_level: info # 把日誌等級調到 info，方便觀察
+
+	  # 確保這幾項開啟，這能讓 dae 自動修改內核參數
+          auto_config_kernel_parameter: true
+          tproxy_port: 7890
+          tproxy_port_protect: true
+
+      }
+
+      subscription {
+          my_sub: 'https://links.rockey-repo.org/s/nXOEvhE6wHJWwSqc'
+      }
+
+      dns {
+        upstream {
+          smartdns: 'udp://127.0.0.1:5335'
+          googledns: 'tcp+udp://dns.google:53'
+          alidns: 'udp://dns.alidns.com:53'
+        }
+        routing {
+          request {
+            qname(geosite:cn) -> alidns
+            fallback: alidns
+          }
+        }
+      }
+
+      group {
+          proxy {
+              policy: min_moving_avg
+              filter: subtag(my_sub) && name(keyword: '新北')
+          }
+          sg {
+              policy: min_moving_avg
+              filter: subtag(my_sub) && name(keyword: 'HK')
+          }
+      }
+
+      routing {
+          pname(smartdns) && l4proto(udp) && dport(5335) -> direct
+          pname(NetworkManager) -> direct
+	  pname(dae) -> direct
+          dip(224.0.0.0/3, 'ff00::/8') -> direct
+          dscp(4) -> direct
+          dip(geoip:private) -> direct
+          
+          domain(geosite:openai) -> proxy
+          domain(geosite:apple@cn) -> direct
+          domain(geosite:steam@cn) -> direct
+
+          ### 修正後的 Telegram 規則 ###
+          domain(geosite:telegram) -> proxy 
+
+          domain(geosite:tencent) -> direct
+          domain(geosite:github) -> proxy
+          domain(geosite:docker) -> proxy
+          
+          domain(geosite: category-games@cn) -> direct
+          domain(suffix: miwifi.com) -> direct(must)
+          domain(suffix: cdn.pandora.xiaomi.com) -> direct(must)
+          domain(suffix: tv.global.mi.com) -> direct(must)
+
+          l4proto(udp) && dport(443) -> block
+          domain(geosite:geolocation-!cn) -> proxy
+          dip(geoip:cn) -> direct
+          domain(geosite:china-list) -> direct
+          domain(geosite:cn) -> direct
+
+          fallback: proxy
+      }
+    '';
+  };
+
+  
+  # SmartDNS 本地解析服务器
+  services.smartdns = {
+    enable = true;
+    # 所有的配置都寫在 settings 裡面
+    settings = {
+      # 綁定埠
+      bind = "127.0.0.1:5335";
+      
+      # 快取設定
+      cache-size = 4096;
+      prefetch-domain = "yes";
+      serve-expired = "yes";
+
+      # 上游伺服器列表 (用清單方式列出)
+      # 注意：不要在字串裡面加 -comment，SmartDNS 不支援這種寫法
+      server = [
+        "8.8.8.8"
+        "1.1.1.1"
+        "8.8.4.4"
+        "1.0.0.1"
+        "114.114.114.114"
+        "223.5.5.5"
+      ];
+      
+      # 如果你有更進階的設定（例如 TCP 查詢、DoH 等），也直接寫在這裡
+      # 例如：
+      # server-tcp = [ "8.8.8.8" ];
+    };
+  };
+
+  # 配置 Git 全域設定
+  programs.git = {
+    enable = true;
+    config = {
+      user.name = "kevin lee";
+      user.email = "e3e0261f@pm.me";
+      # 使用你的 GPG Key ID
+      user.signingkey = "31C81A9DE1AB870A8EDC3486D7C2DF9FA0283056";
+      # 開啟自動簽名 commit，這樣 GitHub 會顯示 "Verified"
+      commit.gpgsign = true;
+      # 解決 init 時的預設分支問題
+      init.defaultBranch = "main";
+    };
+  };
+
+  # --- 1. 系統核心與 Nix 設定 ---
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [
+    "pnpm-10.29.2"
+  ];
+
+  # Bootloader & LUKS
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.initrd.luks.devices."luks-911433c6-a309-4bb3-9ebb-109b6fedcf6b".device = "/dev/disk/by-uuid/911433c6-a309-4bb3-9ebb-109b6fedcf6b";
+
+  # --- 2. 網路與系統服務 ---
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
+
+  services.udisks2.enable = true;     # 硬碟自動掛載
+  security.polkit.enable = true;      # 權限認證核心
+  services.printing.enable = true;    # 列印服務
+  services.flatpak.enable = true;     # 啟用 Flatpak 支援
+
+  # --- 3. 語系與區域設定 ---
+  time.timeZone = "Asia/Taipei";
+  i18n.defaultLocale = "zh_TW.UTF-8";
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "zh_TW.UTF-8";
+    LC_IDENTIFICATION = "zh_TW.UTF-8";
+    LC_MEASUREMENT = "zh_TW.UTF-8";
+    LC_MONETARY = "zh_TW.UTF-8";
+    LC_NAME = "zh_TW.UTF-8";
+    LC_NUMERIC = "zh_TW.UTF-8";
+    LC_PAPER = "zh_TW.UTF-8";
+    LC_TELEPHONE = "zh_TW.UTF-8";
+    LC_TIME = "zh_TW.UTF-8";
+  };
+
+  # 輸入法 (Fcitx5)
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5.addons = with pkgs; [
+      fcitx5-mozc
+      fcitx5-gtk
+      qt6Packages.fcitx5-chinese-addons
+    ];
+  };
+
+  # 字體
+  fonts.packages = with pkgs; [
+    font-awesome_4
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji  # 👈 將 noto-fonts-emoji 改成這個
+  ];
+
+  # --- 4. 桌面環境與圖形介面 ---
+  # 同時保留 GNOME (穩定) 與 Hyprland (美觀)
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+    xwayland.enable = true;
+  };
+
+  programs.waybar.enable = true;
+  services.hypridle.enable = true;
+  programs.hyprlock.enable = true;
+
+  # 音效設定 (Pipewire)
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
+  # 解決「無法請求認證」的問題：在 Hyprland 下啟動 Polkit GNOME
+  systemd.user.services.polkit-gnome-authentication-agent-1 = {
+    description = "polkit-gnome-authentication-agent-1";
+    wantedBy = [ "graphical-session.target" ];
+    wants = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
+    };
+  };
+
+  # --- 5. 使用者設定與 Shell ---
+  users.users."rhys" = {
+    isNormalUser = true;
+    description = "Rhys";
+    extraGroups = [ "networkmanager" "wheel" "storage" ];
+    shell = pkgs.fish;
+  };
+
+  programs.fish.enable = true;
+
+    # 2. 確保 GnuPG Agent 負責 SSH
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true; # 讓 GPG 密鑰也能當 SSH 密鑰用
+    pinentryPackage = pkgs.pinentry-gnome3;
+  };
+
+  # --- 6. 軟體安裝清單 (整合你之前 nix profile 的所有軟體) ---
+  environment.systemPackages = with pkgs; [
+    # 終端機與基礎工具
+    vim neovim git wget curl unzip
+    alacritty kitty fastfetch tree
+    fd ripgrep repgrep ipgrep
+    procps toybox lvm2
+
+    # 開發工具
+    cargo rustc devbox glib
+    
+    # 網路與代理
+    aria2 axel bind
+    clash-verge-rev 
+    # clashtui          # 如果編譯報錯，請先註解掉，部分版本名稱可能不同
+    mihomo dae smartdns
+    
+    # 圖形化應用程式
+    vscodium chromium spotify firefox
+    keepassxc 
+    waybar
+    mako polkit_gnome
+
+    # KDE 應用程式 (修正這裡)
+    kdePackages.ark
+    kdePackages.dolphin
+
+    # 你自訂的 FHS 環境
+    (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
+      pkgs.buildFHSEnv (base // {
+        name = "fhs";
+        targetPkgs = pkgs: (base.targetPkgs pkgs) ++ (with pkgs; [
+          pkg-config
+          ncurses
+        ]);
+        profile = "export FHS=1";
+        runScript = "bash";
+        extraOutputsToInstall = ["dev"];
+      })
+    )
+  ];
+
+  # --- 7. 系統版本 ---
+  # 除非重大升級，否則不要改動此值
+  system.stateVersion = "24.11"; # 請確認你目前的版本，通常是 24.11
+}
