@@ -4,6 +4,7 @@
 
   imports = [
     ./fcitx5.nix # 👈 像引用 Crate 一樣把它引入
+    ./hyprland.nix # 👈 插入新模組
   ];
   
   home.stateVersion = "24.11"; 
@@ -116,39 +117,4 @@
     axel
   ];
 
-    # --- 2. Hyprland 配置 (在這裡加按鍵) ---
-  wayland.windowManager.hyprland = {
-    enable = true;
-    configType = "hyprlang"; # 👈 加入這行，明確告訴系統我們目前用的是傳統語法
-    # 這裡的設定會合併到你的 Hyprland 中
-    settings = {
-      "$mainMod" = "SUPER";
-      # --- 1. 快捷鍵區 ---
-      bind = [
-        # 使用 pkill 發送信號，但要指定正確的進程名
-        # 因為 NixOS 有 wrapped 機制，直接 pkill waybar 有時會失效
-        "$mainMod, W, exec, pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"
-      
-        # 之前的浮動與 Pin
-        "$mainMod, F, togglefloating,"
-        "$mainMod SHIFT, F, pin,"
-      ];
-      # --- 2. 持久化規則區 (這就是你要的記憶功能) ---
-      windowrulev2 = [
-        # 讓 fcitx5 配置介面永遠浮動
-        "float, class:(org.fcitx.fcitx5-config-qt)"
-        "float, class:(fcitx5-config-viewer)"
-        
-        # 讓所有的彈窗、對話框永遠浮動
-        "float, title:(.*Open File.*)"
-        "float, title:(.*File Upload.*)"
-        
-        # 範例：如果你希望特定的終端機或是軟體也持久浮動
-        # "float, class:(pavucontrol)"  # 音量控制
-        # "float, class:(blueman-manager)" # 藍牙管理
-      ];
-    };
-  };
-  
-
-  }
+}
