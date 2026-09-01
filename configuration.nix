@@ -19,7 +19,25 @@ let
       cp $src/geosite.dat $out/share/v2ray/geosite.dat
     '';
   };
+
+  nix-save = pkgs.writeShellScriptBin "nix-save" ''
+    cd /etc/nixos
+    echo "正在執行 nixos-rebuild..."
+    sudo nixos-rebuild switch
+    if [ $? -eq 0 ]; then
+      echo "更新成功，正在同步至 GitHub..."
+      current_date=$(date "+%Y-%m-%d %H:%M:%S")
+      git add .
+      git commit -m "Save config: $current_date"
+      git push origin main
+      echo "全部完成！你的設定檔已同步至 GitHub。"
+    else
+      echo "錯誤：nixos-rebuild 失敗，取消 Git 同步。"
+      exit 1
+    fi
+  '';
 in
+
 
 {
   imports = [ 
@@ -297,7 +315,10 @@ in
     vim neovim git wget curl unzip
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
-    procps toybox lvm2
+    procps toybox lvm2 
+
+    # 自定义工具
+    nix-save
 
     # 開發工具
     cargo rustc devbox glib
