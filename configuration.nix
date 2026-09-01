@@ -384,6 +384,7 @@ in
     cargo rustc devbox glib
     gcc gnumake libtool       # 備用，有些編譯會用到
     #libfido2 fido2-tools      # libfido2 提供 CTAP 支撑库，fido2-tools 提供一些命令行工具用于测试 FIDO2 操作（例如模拟令牌命令、查验）。适合测试和调试
+    jq
     
     # 網路與代理
     aria2 axel bind
