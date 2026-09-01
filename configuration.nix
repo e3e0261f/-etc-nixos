@@ -257,6 +257,13 @@ in
     xwayland.enable = true;
   };
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    # 針對 Hyprland 的配置
+    config.common.default = "*"; 
+  };
+
   programs.waybar.enable = true;
   services.hypridle.enable = true;
   programs.hyprlock.enable = true;
