@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 {
+
+  environment.systemPackages = [ pkgs.gcc pkgs.gnumake ];
   programs.neovim = {
     enable = true;
     defaultEditor = true;

@@ -368,6 +368,7 @@ in
 
     # 開發工具
     cargo rustc devbox glib
+    gcc gnumake libtool       # 備用，有些編譯會用到
     
     # 網路與代理
     aria2 axel bind
