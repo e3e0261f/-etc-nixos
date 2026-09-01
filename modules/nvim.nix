@@ -1,28 +1,32 @@
 { pkgs, ... }:
 
 {
-
-  environment.systemPackages = [ pkgs.gcc pkgs.gnumake ];
   programs.neovim = {
     enable = true;
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
 
+    # --- 核心改進：由 Nix 直接安裝 Treesitter 和語法包 ---
     configure = {
+      # 這裡安裝插件，Nix 會自動處理下載和編譯
+      packages.myVimPackage = with pkgs.vimPlugins; {
+        start = [ 
+          (nvim-treesitter.withPlugins (p: with p; [ 
+            c lua vim vimdoc query typescript tsx html css json python bash markdown markdown_inline
+          ]))
+        ];
+      };
+
       customRC = ''
         lua << EOF
-        -- 1. 原有的：自動建立不存在的目錄
-        vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-          group = vim.api.nvim_create_augroup("auto_create_dir", { clear = true }),
-          callback = function(event)
-            if event.match:match("^%w%w+:[\\/][\\/]") then
-              return
-            end
-            local file = vim.loop.fs_realpath(event.match) or event.match
-            vim.fn.mkdir(vim.fn.fnamemodify(file, ":h"), "p")
-          end,
-        })
+        -- Treesitter 基礎配置
+        require'nvim-treesitter.configs'.setup {
+          highlight = {
+            enable = true,              -- 開啟高亮
+            additional_vim_regex_highlighting = false,
+          },
+        }
 
         -- 2. 原有的：魔法 Sudo 保存命令 (:W)
         vim.api.nvim_create_user_command('W', function()
