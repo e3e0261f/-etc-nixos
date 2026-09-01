@@ -379,6 +379,16 @@ in
     vscodium chromium spotify
     keepassxc discord
     polkit_gnome
+    crow-translate
+    gimagereader
+    tesseract
+    # Wayland 截图支持（如需要）
+    grim
+    slurp
+    wl-clipboard
+    translate-shell
+
+
 
     # KDE 應用程式 (修正這裡)
     kdePackages.ark
