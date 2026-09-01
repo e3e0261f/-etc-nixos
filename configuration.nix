@@ -97,6 +97,7 @@ in
   };
 
   # 1. 啟用 dae 服務
+  #services.daed.enable = true;
   services.dae = {
     enable = true;
     assets = [ my-dae-assets ];
@@ -384,8 +385,7 @@ in
     
     # 網路與代理
     aria2 axel bind
-    # clashtui          # 如果編譯報錯，請先註解掉，部分版本名稱可能不同
-    dae smartdns
+    dae daed smartdns
     
     # 圖形化應用程式
     vscodium chromium spotify
@@ -394,6 +394,8 @@ in
     crow-translate
     gimagereader
     tesseract
+    # clash-verge-rev
+
     # Wayland 截图支持（如需要）
     grim
     slurp
@@ -429,6 +431,7 @@ in
       })
     )
   ];
+
 
   # --- 7. 系統版本 ---
   # 除非重大升級，否則不要改動此值
