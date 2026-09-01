@@ -7,8 +7,11 @@
     # 1. 引入 Home Manager
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs"; # 讓它跟隨系統套件版本
+      inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # 如果以後有真正的 cool-config 再打開這裡
+    # cool-config.url = "github:super-hacker/cool-hyprland"; 
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
@@ -16,16 +19,18 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+        # --- 列表項目 1: 檔案路徑 ---
         ./configuration.nix
-        # 2. 載入 Home Manager 模組
+
+        # --- 列表項目 2: 模組路徑 (注意：沒有分號) ---
         home-manager.nixosModules.home-manager
+
+        # --- 列表項目 3: 配置區塊 (大括號內部每一行都要分號) ---
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
-          # 如果檔案衝突，自動把舊檔案重新命名為 filename.backup
           home-manager.backupFileExtension = "backup";
-          # 3. 指定你的用戶 (rhys) 的配置
           home-manager.users.rhys = import ./modules/home.nix;
         }
       ];

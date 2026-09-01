@@ -383,6 +383,7 @@ in
     # 開發工具
     cargo rustc devbox glib
     gcc gnumake libtool       # 備用，有些編譯會用到
+    #libfido2 fido2-tools      # libfido2 提供 CTAP 支撑库，fido2-tools 提供一些命令行工具用于测试 FIDO2 操作（例如模拟令牌命令、查验）。适合测试和调试
     
     # 網路與代理
     aria2 axel bind
@@ -417,7 +418,7 @@ in
     thunar
     thunar-volman
     thunar-archive-plugin
-
+    
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
       pkgs.buildFHSEnv (base // {
@@ -432,6 +433,11 @@ in
       })
     )
   ];
+
+  # 他在代碼裡定義的開關，你直接拿來用
+  #services.cool-hyprland.enable = true;
+  #services.cool-hyprland.theme = "neon-purple";
+  services.gnome.gnome-keyring.enable = true;
 
   # --- 7. 系統版本 ---
   # 除非重大升級，否則不要改動此值
