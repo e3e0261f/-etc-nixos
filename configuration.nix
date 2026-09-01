@@ -146,7 +146,21 @@ in
           
           domain(geosite:openai) -> proxy
           domain(geosite:apple@cn) -> direct
+          # --- [ 第一步：確保下載走直連 ] ---
+          # steam@cn 包含了大陸的遊戲下載伺服器
           domain(geosite:steam@cn) -> direct
+          
+          # 這裡可以加入一些常見的遊戲下載標籤
+          domain(geosite:category-games@cn) -> direct
+
+          # --- [ 第二步：確保商店與社區走代理 ] ---
+          # geosite:steam 標籤通常包含了 steamcommunity.com 和 steampowered.com
+          # 因為它在 steam@cn 之後，所以下載流量不會被它截獲
+          domain(geosite:steam) -> proxy
+
+          # --- [ 第三步：常規大陸流量直連 ] ---
+          domain(geosite:cn) -> direct
+          dip(geoip:cn) -> direct
 
           ### 修正後的 Telegram 規則 ###
           domain(geosite:telegram) -> proxy 
@@ -162,9 +176,7 @@ in
 
           l4proto(udp) && dport(443) -> block
           domain(geosite:geolocation-!cn) -> proxy
-          dip(geoip:cn) -> direct
           domain(geosite:china-list) -> direct
-          domain(geosite:cn) -> direct
 
           fallback: proxy
       }
