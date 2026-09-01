@@ -28,6 +28,9 @@ in
 
   # 1. 關閉 GNOME 內建的 SSH 代理，避免與 GnuPG 衝突
   services.gnome.gcr-ssh-agent.enable = false;
+    # 確保硬碟掛載功能正常 (Thunar 必備)
+  services.gvfs.enable = true; 
+  services.tumbler.enable = true;
 
   # --- 1. 開啟內核 IP 轉發 (透明代理必備) ---
   boot.kernel.sysctl = {
@@ -204,15 +207,24 @@ in
     LC_TIME = "zh_TW.UTF-8";
   };
 
-  # 輸入法 (Fcitx5)
+
+  # fcitx5
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      fcitx5-mozc
-      fcitx5-gtk
-      qt6Packages.fcitx5-chinese-addons
-    ];
+    fcitx5.waylandFrontend = true; # 強烈建議加上這行，對 Wayland 支援更好
+    fcitx5.addons = with pkgs; [ fcitx5-gtk qt6Packages.fcitx5-chinese-addons ];
+  };
+
+  # 自動啟動 fcitx5
+  systemd.user.services.fcitx5-daemon = {
+    description = "Fcitx5 input method editor";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.fcitx5}/bin/fcitx5";
+      Restart = "on-failure";
+    };
   };
 
   # 字體
@@ -305,6 +317,15 @@ in
     # KDE 應用程式 (修正這裡)
     kdePackages.ark
     kdePackages.dolphin
+    
+    # Hrprland 组件 
+    fuzzel           # 👈 你說的 F 開頭啟動器
+    waybar           # 狀態欄
+    mako             # 通知
+    # 文件管理器 (Thunar 及其配件)
+    xfce.thunar
+    xfce.thunar-volman
+    xfce.thunar-archive-plugin
 
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
