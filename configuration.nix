@@ -41,6 +41,7 @@ in
     ./hardware-configuration.nix
     ./modules/scripts.nix
     ./modules/nvim.nix
+    ./modules/keyd.nix
 
   ];
 
