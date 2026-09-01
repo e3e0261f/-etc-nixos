@@ -201,4 +201,36 @@
         "C-S-w" = ["select_all" "delete_selection"];       };
     };
   };
+
+  # 軟體包安裝
+  home.packages = with pkgs; [
+    yazi
+    btop
+    zellij
+    nushell
+    magic-wormhole-rs
+    kitty # 確保 yazi 呼叫時有終端機
+  ];
+
+  # Btop 配置：開啟 Vim 模式和 Zen 內核監控
+  programs.btop = {
+    enable = true;
+    settings = {
+      color_theme = "tokyo-night";
+      vim_keys = true;
+      update_ms = 300; # 更快的刷新率
+    };
+  };
+
+  # Zellij 配置：開啟有思維的終端
+  programs.zellij.enable = true;
+
+  # 配置 Fish 縮寫以便快速進入這些工具
+  programs.fish.shellAbbrs = {
+    y = "yazi";
+    zj = "zellij";
+    top = "btop";
+    nu = "nushell";
+  };
+
 }
