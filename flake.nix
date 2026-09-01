@@ -29,6 +29,11 @@
                   cp -r ${here}/scripts $HOME/.local/share/hyprland/themes/cyberarch/scripts || true
                 '';
               })
+
+              # Ensure home.stateVersion is defined for Home Manager
+              ({ config, pkgs, ... }: {
+                home.stateVersion = "23.11";
+              })
             ];
           };
         in {
@@ -74,6 +79,11 @@
                 cp -r ${here}/assets/* $HOME/.local/share/hyprland/themes/cyberarch/ || true
                 cp -r ${here}/scripts $HOME/.local/share/hyprland/themes/cyberarch/scripts || true
               '';
+            })
+
+            # Ensure home.stateVersion is defined for this top-level hm
+            ({ config, pkgs, ... }: {
+              home.stateVersion = "23.11";
             })
           ];
         };
