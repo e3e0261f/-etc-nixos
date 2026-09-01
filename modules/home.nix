@@ -3,30 +3,6 @@
 {
   home.stateVersion = "24.11"; 
 
-  programs.helix = {
-    enable = true;
-    # 這裡就是 Helix 的魅力：內置了 Treesitter 和 LSP 支援，不用額外配置
-    settings = {
-      theme = "tokyonight"; # 內置了幾十種高端主題
-      editor = {
-        line-number = "relative";
-        cursor-shape = {
-          insert = "bar";
-          normal = "block";
-        };
-        lsp.display-messages = true;
-      };
-      
-      # 映射你習慣的快捷鍵
-      keys.normal = {
-        "C-s" = ":w";         # Ctrl + s 保存
-        "A-x" = "extend_line_below"; # 選中並準備刪除
-        "C-S-w" = ["select_all" "delete_selection"]; # Ctrl+Shift+w 清空
-      };
-    };
-  };
-
-
   # --- 1. Waybar 高端膠囊島配置 ---
   programs.waybar = {
     enable = true;
@@ -196,4 +172,26 @@
 
   # --- 3. 讓 Neovim 使用你的使用者配色 (可選) ---
   # 你也可以在這裡加上其他個人軟體的配置
+  #
+  programs.helix = {
+    enable = true;
+    # 2026 程序員嘗鮮配置
+    settings = {
+      theme = "tokyonight";
+      editor = {
+        line-number = "relative";
+        cursor-shape = {
+          insert = "bar";
+          normal = "block";
+        };
+        # 顯示當前所在的函數名等信息
+        statusline.center = ["file-name" "file-modification-indicator"];
+      };
+      keys.normal = {
+        "C-s" = ":w";
+        "A-x" = ["extend_line_below" "delete_selection"];
+        "C-S-w" = ["select_all" "delete_selection"];
+      };
+    };
+  };
 }
