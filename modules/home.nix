@@ -72,10 +72,11 @@
 
   # --- 4. 其他現代化工具 ---
   
-  # Yazi
+  # --- 1. 修復 Yazi 警告 ---
   programs.yazi = {
     enable = true;
     enableFishIntegration = true;
+    shellWrapperName = "y"; # 👈 加入這行，消除那個 "yy" 轉 "y" 的警告
   };
 
   # Btop
@@ -109,4 +110,25 @@
     aria2
     axel
   ];
+
+    # --- 2. Hyprland 配置 (在這裡加按鍵) ---
+  wayland.windowManager.hyprland = {
+    enable = true;
+    # 這裡的設定會合併到你的 Hyprland 中
+    settings = {
+      "$mainMod" = "SUPER";
+      bind = [
+        # Super + F: 切換浮動狀態 (讓視窗飛起來)
+        "$mainMod, F, togglefloating,"
+        
+        # Super + Shift + F: 持久化 (Pin)
+        # 讓浮動視窗固定在螢幕上，換工作區它也不會消失
+        "$mainMod SHIFT, F, pin,"
+        
+        # 你之前的 Waybar 快捷鍵也可以搬過來
+        "$mainMod, W, exec, pkill -USR1 waybar"
+      ];
+    };
+  };
+
 }
