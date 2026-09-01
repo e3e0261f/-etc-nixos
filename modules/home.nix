@@ -114,21 +114,33 @@
     # --- 2. Hyprland 配置 (在這裡加按鍵) ---
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang"; # 👈 加入這行，明確告訴系統我們目前用的是傳統語法
     # 這裡的設定會合併到你的 Hyprland 中
     settings = {
       "$mainMod" = "SUPER";
+      # --- 1. 快捷鍵區 ---
       bind = [
-        # Super + F: 切換浮動狀態 (讓視窗飛起來)
-        "$mainMod, F, togglefloating,"
-        
-        # Super + Shift + F: 持久化 (Pin)
-        # 讓浮動視窗固定在螢幕上，換工作區它也不會消失
-        "$mainMod SHIFT, F, pin,"
-        
-        # 你之前的 Waybar 快捷鍵也可以搬過來
+        "$mainMod, F, togglefloating,"       # 手動臨時切換
+        "$mainMod SHIFT, F, pin,"            # 釘住（跨桌面跟隨）
         "$mainMod, W, exec, pkill -USR1 waybar"
+      ];
+
+      # --- 2. 持久化規則區 (這就是你要的記憶功能) ---
+      windowrulev2 = [
+        # 讓 fcitx5 配置介面永遠浮動
+        "float, class:(org.fcitx.fcitx5-config-qt)"
+        "float, class:(fcitx5-config-viewer)"
+        
+        # 讓所有的彈窗、對話框永遠浮動
+        "float, title:(.*Open File.*)"
+        "float, title:(.*File Upload.*)"
+        
+        # 範例：如果你希望特定的終端機或是軟體也持久浮動
+        # "float, class:(pavucontrol)"  # 音量控制
+        # "float, class:(blueman-manager)" # 藍牙管理
       ];
     };
   };
+  
 
-}
+  }
