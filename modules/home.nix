@@ -188,10 +188,17 @@
         statusline.center = ["file-name" "file-modification-indicator"];
       };
       keys.normal = {
-        "C-s" = ":w";
-        "A-x" = ["extend_line_below" "delete_selection"];
-        "C-S-w" = ["select_all" "delete_selection"];
-      };
+        # --- 核心：大寫 Z 開頭的組合鍵 ---
+        "Z" = { 
+          "Z" = ":x";   # 按下 Shift+z, Shift+z (ZZ) 保存退出
+          "z" = ":x";   # 按下 Shift+z, 再按 z (Zz) 保存退出
+        };        # --- 保存與退出 ---
+        "C-s" = ":w";         # Ctrl + s 保存
+        # --- 刪除/剪切優化 ---
+        "A-x" = ["extend_line_below" "delete_selection"]; # Alt + x 刪掉目前行
+        "D" = ["select_all" "delete_selection"];          # 大寫 D 一鍵清空文件 (比 %d 還快)
+                # 這是你之前要的 Ctrl+Shift+w
+        "C-S-w" = ["select_all" "delete_selection"];       };
     };
   };
 }
