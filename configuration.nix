@@ -50,6 +50,18 @@ in
 
 
 
+  
+  nix.settings = {
+    # 同時下載的任務數 (根據你的 CPU 核心數設定，建議 4-8)
+    max-jobs = "auto";
+    
+    # 每個任務開啟的並行連接數 (這就是你要的多線程加速！)
+    http-connections = 50; 
+    
+    # 如果下載速度低於這個位元組/秒，持續一段時間就放棄 (防止卡死)
+    min-free = 128000000;
+  };
+
 
   # 補回這一行，讓系統環境支援 Fish 作為登入 Shell
   programs.fish.enable = true;

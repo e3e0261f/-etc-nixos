@@ -110,6 +110,19 @@
   # --- 2. Fish Proxy 魔法指令 ---
   programs.fish = {
     enable = true;
+
+    functions = {
+      # 1. adl (Aria2 Download): 自動開啟 16 線程，且支援斷點續傳
+      adl = ''
+        aria2c -s 16 -x 16 -k 1M --continue=true --console-log-level=warn --summary-interval=0 $argv
+      '';
+
+      # 2. fastget (Axel Download): 極簡多線程，適合單一檔案
+      fastget = ''
+        axel -n 16 -a $argv
+      '';
+    };
+
     functions = {
       proxy = ''
         if test (count $argv) -eq 0
@@ -122,6 +135,38 @@
             echo "🌐 Proxy set to port $argv[1]. Mode: Global"
         end
       '';
+    };
+  };
+
+
+    programs.alacritty = {
+    enable = true;
+    settings = {
+      # 1. 透明度設定 (0.0 到 1.0)
+      window.opacity = 0.85; 
+
+      # 2. 視窗內邊距 (讓文字不要貼著邊緣，更有設計感)
+      window.padding = {
+        x = 12;
+        y = 12;
+      };
+
+      # 3. 字體設定
+      font = {
+        size = 12.0;
+        normal = {
+          family = "JetBrainsMono Nerd Font";
+          style = "Regular";
+        };
+      };
+
+      # 4. 配色方案 (可選，推薦 Tokyo Night 或 Dracula)
+      colors = {
+        primary = {
+          background = "#1a1b26"; # 深色背景配透明度效果最好
+          foreground = "#c0caf5";
+        };
+      };
     };
   };
 
