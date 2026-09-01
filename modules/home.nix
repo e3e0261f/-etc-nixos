@@ -1,6 +1,11 @@
 { pkgs, ... }:
 
 {
+
+  imports = [
+    ./fcitx5.nix # 👈 像引用 Crate 一樣把它引入
+  ];
+  
   home.stateVersion = "24.11"; 
 
   # --- 1. Waybar 高端膠囊島 ---
@@ -120,11 +125,14 @@
       "$mainMod" = "SUPER";
       # --- 1. 快捷鍵區 ---
       bind = [
-        "$mainMod, F, togglefloating,"       # 手動臨時切換
-        "$mainMod SHIFT, F, pin,"            # 釘住（跨桌面跟隨）
-        "$mainMod, W, exec, pkill -USR1 waybar"
+        # 使用 pkill 發送信號，但要指定正確的進程名
+        # 因為 NixOS 有 wrapped 機制，直接 pkill waybar 有時會失效
+        "$mainMod, W, exec, pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"
+      
+        # 之前的浮動與 Pin
+        "$mainMod, F, togglefloating,"
+        "$mainMod SHIFT, F, pin,"
       ];
-
       # --- 2. 持久化規則區 (這就是你要的記憶功能) ---
       windowrulev2 = [
         # 讓 fcitx5 配置介面永遠浮動
