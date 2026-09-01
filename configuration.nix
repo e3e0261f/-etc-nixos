@@ -1,17 +1,13 @@
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page.
-
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 let
   my-dae-assets = pkgs.stdenv.mkDerivation {
     name = "my-dae-assets";
-    src = pkgs.fetchFromGitHub {
-      owner = "e3e0261f";
-      repo = "GEoIP-GEoSITE";
-      rev = "main";
-      sha256 = "sha256-RLCjV6Plxvog54vAk6w4pZtIUGk59WoolMuJDeHQQSE="; # 這裡填正確的 Hash
-    };
+    # 直接使用來自 Flake inputs 的原始碼
+    src = inputs.my-rules; 
+    
     dontUnpack = true;
     installPhase = ''
       mkdir -p $out/share/v2ray
@@ -22,18 +18,16 @@ let
 
   nix-save = pkgs.writeShellScriptBin "nix-save" ''
     cd /etc/nixos
-    echo "正在執行 nixos-rebuild..."
-    sudo nixos-rebuild switch
+    # Flakes 必須先 git add 檔案，否則 Nix 找不到新檔案
+    git add . 
+    
+    # 使用 --flake 指令替代傳統指令
+    # .#nixos 代表「目前的資料夾」裡的「nixos」配置
+    sudo nixos-rebuild switch --flake .#nixos
+    
     if [ $? -eq 0 ]; then
-      echo "更新成功，正在同步至 GitHub..."
-      current_date=$(date "+%Y-%m-%d %H:%M:%S")
-      git add .
-      git commit -m "Save config: $current_date"
+      git commit -m "Save config (Flake): $(date '+%Y-%m-%d %H:%M:%S')"
       git push origin main
-      echo "全部完成！你的設定檔已同步至 GitHub。"
-    else
-      echo "錯誤：nixos-rebuild 失敗，取消 Git 同步。"
-      exit 1
     fi
   '';
 in
@@ -325,15 +319,13 @@ in
     
     # 網路與代理
     aria2 axel bind
-    clash-verge-rev 
     # clashtui          # 如果編譯報錯，請先註解掉，部分版本名稱可能不同
-    mihomo dae smartdns
+    dae smartdns
     
     # 圖形化應用程式
-    vscodium chromium spotify firefox
-    keepassxc 
-    waybar
-    mako polkit_gnome
+    vscodium chromium spotify
+    keepassxc discord
+    polkit_gnome
 
     # KDE 應用程式 (修正這裡)
     kdePackages.ark
@@ -344,9 +336,9 @@ in
     waybar           # 狀態欄
     mako             # 通知
     # 文件管理器 (Thunar 及其配件)
-    xfce.thunar
-    xfce.thunar-volman
-    xfce.thunar-archive-plugin
+    thunar
+    thunar-volman
+    thunar-archive-plugin
 
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
