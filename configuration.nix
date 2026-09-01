@@ -375,7 +375,7 @@ in
     vim neovim git wget curl unzip
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
-    procps toybox lvm2 
+    procps toybox lvm2 dust
 
     # 自定义工具
     nix-save
