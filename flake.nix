@@ -1,23 +1,33 @@
 {
-  description = "Rhys's NixOS Flake Configuration";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    my-rules.url = "github:e3e0261f/GEoIP-GEoSITE";
+    my-rules.flake = false;
 
-	# 1. 輸入：定義你的資源來自哪裡
-	inputs = {
-	  # 改成這個寫法，Nix 會自動下載極小的 tar.gz 壓縮包，而不是整個 3.5GB 的 Git 歷史
-	  nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # 1. 引入 Home Manager
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs"; # 讓它跟隨系統套件版本
+    };
+  };
 
-	  my-rules.url = "github:e3e0261f/GEoIP-GEoSITE";
-	  my-rules.flake = false;
-	};
-
-  # 2. 輸出：定義如何構建你的系統
-  outputs = { self, nixpkgs, my-rules, ... }@inputs: {
-    # 'nixos' 是你的主機名稱 (hostname)
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; }; # 把 inputs 傳遞給 configuration.nix
+      specialArgs = { inherit inputs; };
       modules = [
-        ./configuration.nix # 讀取原本的設定檔
+        ./configuration.nix
+        # 2. 載入 Home Manager 模組
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          # 如果檔案衝突，自動把舊檔案重新命名為 filename.backup
+          home-manager.backupFileExtension = "backup";
+          # 3. 指定你的用戶 (rhys) 的配置
+          home-manager.users.rhys = import ./modules/home.nix;
+        }
       ];
     };
   };

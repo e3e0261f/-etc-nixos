@@ -34,9 +34,43 @@ in
 
 
 {
+
+
   imports = [ 
+
     ./hardware-configuration.nix
+    ./modules/scripts.nix
+    ./modules/nvim.nix
+
   ];
+
+
+
+	boot.kernelPackages = pkgs.linuxPackages_zen;
+
+
+
+
+  # 補回這一行，讓系統環境支援 Fish 作為登入 Shell
+  programs.fish.enable = true;
+  # Fish 代理proxy命令循环
+  environment.etc."fish/functions/proxy.fish".text = ''
+    function proxy
+        if test (count $argv) -eq 0
+            # 無參數：清理
+            set -e http_proxy
+            set -e https_proxy
+            set -e all_proxy
+            echo "Proxy environment cleared. Welcome back to nature."
+        else
+            # 有參數：設定代理
+            set -gx http_proxy http://127.0.0.1:$argv[1]
+            set -gx https_proxy http://127.0.0.1:$argv[1]
+            set -gx all_proxy socks5://127.0.0.1:$argv[1]
+            echo "Proxy set to port $argv[1]. Ready to fly."
+        end
+    end
+  '';
 
   # 1. 關閉 GNOME 內建的 SSH 代理，避免與 GnuPG 衝突
   services.gnome.gcr-ssh-agent.enable = false;
@@ -301,7 +335,6 @@ in
     shell = pkgs.fish;
   };
 
-  programs.fish.enable = true;
 
     # 2. 確保 GnuPG Agent 負責 SSH
   programs.gnupg.agent = {
