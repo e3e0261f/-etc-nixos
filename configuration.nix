@@ -388,6 +388,7 @@ in
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
     luajit wev socat opencc delta
+    ffmpeg
 
     # 自定义工具
     nix-save
