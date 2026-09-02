@@ -1,45 +1,35 @@
-
+# /etc/nixos/modules/hyprland.nix
 { pkgs, ... }:
-
 {
   wayland.windowManager.hyprland = {
     enable = true;
-    configType = "hyprlang"; # 消除之前的 Lua 警告
+    # 💡 這樣就不會有那個討厭的警告了
+    configType = "hyprlang"; 
     
     settings = {
       "$mainMod" = "SUPER";
+      
+      # 💡 定義啟動項
+      exec-once = [
+        "uwsm app -- waybar"
+        "uwsm app -- fcitx5 -d"
+        "nm-applet --indicator"
+      ];
 
-      # --- 快捷鍵 ---
       bind = [
+        "$mainMod, Q, exec, kitty"
+        "$mainMod SHIFT, Return, exec, chromium" # 👈 你要的快捷鍵
+        "$mainMod, D, exec, fuzzel"
+        "$mainMod, R, exec, fuzzel"
         "$mainMod, F, togglefloating,"
         "$mainMod SHIFT, F, pin,"
-        # 修復後的 Waybar Toggle 魔法
         "$mainMod, W, exec, pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"
-        # 啟動器
-        "$mainMod, D, exec, fuzzel"
-        # 終端機
-        "$mainMod, Q, exec, kitty"
-        # 文件管理器 (回歸 Thunar)
-        "$mainMod, E, exec, thunar"
       ];
-
-      # --- 浮動持久化規則 ---
+      
+      # 💡 確保 Fcitx5 視窗自動浮動
       windowrulev2 = [
         "float, class:(org.fcitx.fcitx5-config-qt)"
-        "float, class:(pavucontrol)"
-        "float, class:(nm-connection-editor)"
-        "float, title:(.*確認.*)"
       ];
-
-      # --- 基礎外觀 ---
-      decoration = {
-        rounding = 10;
-        blur = {
-          enabled = true;
-          size = 6;
-          passes = 2;
-        };
-      };
     };
   };
 }

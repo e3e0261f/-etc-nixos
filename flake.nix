@@ -13,24 +13,20 @@
     # 如果以後有真正的 cool-config 再打開這裡
     # cool-config.url = "github:super-hacker/cool-hyprland"; 
   };
-
+  # /etc/nixos/flake.nix
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
-        # --- 列表項目 1: 檔案路徑 ---
         ./configuration.nix
-
-        # --- 列表項目 2: 模組路徑 (注意：沒有分號) ---
         home-manager.nixosModules.home-manager
-
-        # --- 列表項目 3: 配置區塊 (大括號內部每一行都要分號) ---
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.backupFileExtension = "backup";
+          # 💡 這行是關鍵！它能幫你自動移走那些「礙事」的手動檔案
+          home-manager.backupFileExtension = "backup"; 
+          # 💡 確保這裡是 rhys
           home-manager.users.rhys = import ./modules/home.nix;
         }
       ];
