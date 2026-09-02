@@ -6,7 +6,11 @@
     name = "Bibata-Modern-Classic";
     size = 16;
   };
-
+  wayland.windowManager.hyprland = {
+  enable = true;
+  # 必须关闭 home-manager 自带的 systemd 注入，由 UWSM 接管
+  systemd.enable = false; 
+  };
   gtk = {
     enable = true;
 

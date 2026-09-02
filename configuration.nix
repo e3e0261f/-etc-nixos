@@ -48,10 +48,16 @@ in
 
 
 	boot.kernelPackages = pkgs.linuxPackages_zen;
+	boot.initrd.kernelModules = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "amdgpu" ];
 
 
 
-  
+    hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+    
   nix.settings = {
     # 同時下載的任務數 (根據你的 CPU 核心數設定，建議 4-8)
     max-jobs = "auto";
@@ -313,7 +319,7 @@ in
   # --- 4. 桌面環境與圖形介面 ---
   # 同時保留 GNOME (穩定) 與 Hyprland (美觀)
   services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  # services.desktopManager.gnome.enable = true;
 
   programs.hyprland = {
     enable = true;
@@ -323,7 +329,7 @@ in
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
     # 針對 Hyprland 的配置
     config.common.default = "*"; 
   };
@@ -380,7 +386,7 @@ in
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
-    luajit wev
+    luajit wev socat
 
     # 自定义工具
     nix-save
