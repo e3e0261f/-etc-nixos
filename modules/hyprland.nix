@@ -1,5 +1,5 @@
 { pkgs, ... }:
-
+ 
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -43,18 +43,21 @@
       hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
       hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.exec_cmd("chromium"))
       hl.bind(mainMod .. " + C", hl.dsp.window.close())
-      hl.bind(mainMod .. " + M", hl.dsp.exit())
+      hl.bind(mainMod .. " + SHIFT + DELETE", hl.dsp.exit())
       hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-      hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
       hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 
-      hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
       hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
       hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.pin({ action = "toggle" }))
       
       hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"))
       hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy && notify-send "截圖成功" "圖片已存入剪貼簿"'))
 
+            -- 💡 4. 恢復滑鼠控制 (這就是你要的 Super + 鼠標左右鍵)
+      -- mouse:272 是左鍵 (移動), mouse:273 是右鍵 (縮放)
+      hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+      hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+      
       -- 工作區導航
       for i = 1, 10 do
           local key = i % 10
