@@ -1,4 +1,4 @@
-# Edit this configuration file to define what should be installed on
+#  Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page.
 { config, pkgs, inputs, ... }:
 
@@ -66,6 +66,10 @@ in
 
   # 補回這一行，讓系統環境支援 Fish 作為登入 Shell
   programs.fish.enable = true;
+
+  programs.fish.shellInit = ''
+    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  '';
   # Fish 代理proxy命令循环
   environment.etc."fish/functions/proxy.fish".text = ''
     function proxy

@@ -60,25 +60,22 @@
   programs.helix = {
     enable = true;
     settings = {
-      theme = "tokyonight";
-      editor = {
-        line-number = "relative";
-        cursor-shape = { insert = "bar"; normal = "block"; };
-        statusline.center = ["file-name" "file-modification-indicator"];
-      };
+      # ... 其他 editor 設定保持不變 ...
       keys.normal = {
-        "Z" = { "Z" = ":x"; "z" = ":x"; };
+        # --- 修正後的剪貼簿指令 ---
+        "y" = "yank_to_clipboard";
+        "p" = "paste_clipboard_after";
+        "P" = "paste_clipboard_before";
+        # 💡 如果 R 報錯，我們暫時不用它，或者改用這個組合：
+        "R" = ["delete_selection" "paste_clipboard_before"]; 
+
+        # --- 你原本的其他快捷鍵 ---
         "C-s" = ":w";
+        "Z" = { "Z" = ":x"; "z" = ":x"; "X" = ":q!"; };
         "A-x" = ["extend_line_below" "delete_selection"];
         "D" = ["select_all" "delete_selection"];
         "C-S-w" = ["select_all" "delete_selection"];
-                # 保留你的註釋快捷鍵
         "C-c" = "toggle_comments";
-                # --- 2. 剪貼簿魔法 ---
-        # 讓 y 直接把選中的東西丟進系統剪貼簿 (不再需要 Ctrl+C)
-        "y" = "yank_to_clipboard";
-        "p" = "replace_with_clipboard"; # 讓 p 直接從系統剪貼簿貼上
-        "R" = "replace_with_clipboard"; # 替換模式也用系統剪貼簿
       };
     };
   };
@@ -120,6 +117,30 @@
     enable = true;
     settings = {
       copy_on_select = "yes"; # 👈 滑鼠選中就自動複製
+    };
+  };
+
+  programs.git = {
+    enable = true;
+    
+    # 💡 簽名部分目前保持原樣即可
+    signing = {
+      key = "31C81A9DE1AB870A8EDC3486D7C2DF9FA0283056";
+      signByDefault = true;
+    };
+
+    # 💡 關鍵修正：將資訊移入 settings
+    settings = {
+      user = {
+        name = "kevin lee";
+        email = "e3e0261f@pm.me";
+      };
+      
+      init.defaultBranch = "main";
+      commit.gpgsign = true;
+
+      # 魔法 SSH 轉向
+      url."git@github.com:".insteadOf = "https://github.com/";
     };
   };
 
