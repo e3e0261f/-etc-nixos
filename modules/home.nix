@@ -72,6 +72,13 @@
         "A-x" = ["extend_line_below" "delete_selection"];
         "D" = ["select_all" "delete_selection"];
         "C-S-w" = ["select_all" "delete_selection"];
+                # 保留你的註釋快捷鍵
+        "C-c" = "toggle_comments";
+                # --- 2. 剪貼簿魔法 ---
+        # 讓 y 直接把選中的東西丟進系統剪貼簿 (不再需要 Ctrl+C)
+        "y" = "yank_to_clipboard";
+        "p" = "replace_with_clipboard"; # 讓 p 直接從系統剪貼簿貼上
+        "R" = "replace_with_clipboard"; # 替換模式也用系統剪貼簿
       };
     };
   };
@@ -106,6 +113,13 @@
       window.opacity = 0.85;
       window.padding = { x = 12; y = 12; };
       font.size = 12.0;
+    };
+  };
+
+  programs.kitty = {
+    enable = true;
+    settings = {
+      copy_on_select = "yes"; # 👈 滑鼠選中就自動複製
     };
   };
 
