@@ -93,6 +93,7 @@
                     # 執行台式在地化繁體轉換 (s2twp.json)
                     opencc -i "$f" -o "$f.txt" -c s2twp.json
                     echo "✨ 轉繁成功: $f.txt"
+                    diff -u "$f" "$f.txt"
                     set count (math $count + 1)
                 end
             end
