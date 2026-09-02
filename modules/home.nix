@@ -4,7 +4,7 @@
 
   imports = [
     ./fcitx5.nix # 👈 像引用 Crate 一樣把它引入
-    ./hyprland.nix # 👈 插入新模組
+    #./hyprland.nix # 👈 插入新模組
     ./waybar.nix # 👈 插入新模組
   ];
   
