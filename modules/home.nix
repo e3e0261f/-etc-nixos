@@ -35,27 +35,49 @@
   # --- 2. Fish Shell (合併所有 functions 和 abbrs) ---
   programs.fish = {
     enable = true;
+    
+    # 1. 簡單的縮寫 (Abbrs) - 裡面不要有雙引號嵌套或複雜變數
     shellAbbrs = {
-      y = "yazi"; zj = "zellij"; top = "btop"; nu = "nushell"; helix = "hx";
+      gcl  = "git clone --depth 1";
+      l    = "ls -alh";
+      ll   = "ls -l";
+      ls   = "ls --color=tty";
+      y    = "yazi"; 
+      zj   = "zellij"; 
+      top  = "btop"; 
+      nu   = "nushell"; 
+      helix = "hx";
     };
+
+    # 2. 複雜的指令，改成用 functions 定義 (安全、易讀、不會引發 Nix 解析崩潰)
     functions = {
       # 代理指令
       proxy = ''
         if test (count $argv) -eq 0
             set -e http_proxy; set -e https_proxy; set -e all_proxy
-            echo "🌿 Proxy cleared."
+            echo "🌿 Proxy cleared. Mode: Direct"
         else
             set -gx http_proxy http://127.0.0.1:$argv[1]
             set -gx https_proxy http://127.0.0.1:$argv[1]
             set -gx all_proxy socks5://127.0.0.1:$argv[1]
-            echo "🌐 Proxy set to $argv[1]."
+            echo "🌐 Proxy set to port $argv[1]. Mode: Global"
         end
       '';
-      # 下載指令
-      adl = "aria2c -s 16 -x 16 -k 1M --continue=true $argv";
-      fastget = "axel -n 16 -a $argv";
+
+      # 截圖存檔指令 (替代原本複雜的 sss)
+      sss = ''
+        set filename ~/Pictures/(date +%Y%m%d_%H%M%S).png
+        grim -g "(slurp)" $filename
+        echo "📸 截圖已儲存至 $filename"
+      '';
+
+      # 世代查詢 (替代原本的 nix-rollback)
+      nix-bac = ''
+        sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+      '';
     };
   };
+
 
   # --- 3. Helix 編輯器 ---
   programs.helix = {

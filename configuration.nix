@@ -156,7 +156,7 @@ in
           }
           sg {
               policy: min_moving_avg
-              filter: subtag(my_sub) && name(keyword: 'HK')
+              filter: subtag(my_sub) && name(keyword: '4')
           }
       }
 
@@ -197,6 +197,7 @@ in
           domain(suffix: miwifi.com) -> direct(must)
           domain(suffix: cdn.pandora.xiaomi.com) -> direct(must)
           domain(suffix: tv.global.mi.com) -> direct(must)
+          domain(suffix: mega.nz) -> sg
 
           l4proto(udp) && dport(443) -> block
           domain(geosite:geolocation-!cn) -> proxy
@@ -410,6 +411,7 @@ in
     tesseract
     networkmanagerapplet
     # clash-verge-rev
+    steam
 
     # Wayland 截图支持（如需要）
     grim
