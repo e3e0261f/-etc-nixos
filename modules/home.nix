@@ -75,6 +75,30 @@
       nix-bac = ''
         sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
       '';
+
+      s2tw-srt = ''
+        if test (count $argv) -eq 0
+            # 無參數：遞迴掃描 ~/下載
+            set target_dir "$HOME/下載"
+            echo "🔍 正在遞迴掃描 ~/下載 ..."
+            find "$target_dir" -type f -name "*.srt" | while read -l f
+                if not string match -q "*.srt.txt" "$f"
+                    opencc -i "$f" -o "$f.txt" -c s2tw.json
+                    echo "✨ 轉繁成功: $f.txt"
+                end
+            end
+        else
+            # 有參數：支援單獨指定某個檔案
+            set f $argv[1]
+            if test -f "$f"
+                opencc -i "$f" -o "$f.txt" -c s2tw.json
+                echo "✨ 轉繁成功: $f.txt"
+            else
+                echo "❌ 找不到檔案: $f"
+            end
+        end
+        echo "🎉 搞定！"
+      '';
     };
   };
 

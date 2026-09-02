@@ -387,7 +387,7 @@ in
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
-    luajit wev socat
+    luajit wev socat opencc
 
     # 自定义工具
     nix-save
