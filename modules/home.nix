@@ -104,8 +104,8 @@
             set f $argv[1]
             if test -f "$f"
                 opencc -i "$f" -o "$f.txt" -c s2twp.json
-                diff -u "$f" "$f.txt"
                 echo "✨ 單檔轉繁成功: $f.txt"
+                diff -u "$f" "$f.txt"
             else
                 echo "❌ 找不到檔案: $f"
             end
