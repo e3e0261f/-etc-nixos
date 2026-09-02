@@ -47,6 +47,7 @@
       top  = "btop"; 
       nu   = "nushell"; 
       helix = "hx";
+      cc = "cc"; 
     };
 
     # 2. 複雜的指令，改成用 functions 定義 (安全、易讀、不會引發 Nix 解析崩潰)
@@ -76,27 +77,40 @@
         sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
       '';
 
-      s2tw-srt = ''
-        if test (count $argv) -eq 0
-            # 無參數：遞迴掃描 ~/下載
-            set target_dir "$HOME/下載"
-            echo "🔍 正在遞迴掃描 ~/下載 ..."
-            find "$target_dir" -type f -name "*.srt" | while read -l f
-                if not string match -q "*.srt.txt" "$f"
-                    opencc -i "$f" -o "$f.txt" -c s2tw.json
+      # 將命令正式更名為 cc
+      cc = ''
+        set -l target_dirs "$HOME/下載" "$HOME/Downloads"
+        set -l count 0
+
+        for d in $target_dirs
+            if test -d "$d"
+                echo "🔍 正在掃描目錄: $d ..."
+                find "$d" -type f -iname "*.srt" | while read -l f
+                    if string match -q "*.srt.txt" "$f"
+                        continue
+                    end
+                
+                    # 執行台式在地化繁體轉換 (s2twp.json)
+                    opencc -i "$f" -o "$f.txt" -c s2twp.json
                     echo "✨ 轉繁成功: $f.txt"
+                    set count (math $count + 1)
                 end
             end
-        else
-            # 有參數：支援單獨指定某個檔案
+        end
+
+        if test (count $argv) -gt 0
+            # 如果手動指定了檔案參數
             set f $argv[1]
             if test -f "$f"
-                opencc -i "$f" -o "$f.txt" -c s2tw.json
-                echo "✨ 轉繁成功: $f.txt"
+                opencc -i "$f" -o "$f.txt" -c s2twp.json
+                echo "✨ 單檔轉繁成功: $f.txt"
             else
                 echo "❌ 找不到檔案: $f"
             end
+        else if test $count -eq 0
+            echo "📭 沒有找到任何需要轉換的 .srt 檔案。"
         end
+    
         echo "🎉 搞定！"
       '';
     };
