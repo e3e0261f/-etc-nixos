@@ -11,10 +11,28 @@
         echo "🌿 目前環境：【直連模式】"
       fi
       echo "----------------------------------------"
+      # --- 1. Lua 語法預檢 (質檢掃描儀) ---
+      echo "🔍 正在進行 Lua 語法安全檢查..."
+      
+      # 我們建立一個臨時文件來模擬最終生成的 Lua 代碼
+      # 這裡主要檢查 modules/hyprland.nix 裡注入的內容
+      # 2026 程序員技巧：直接用 luajit -bl 檢查語法而不執行
+      
+      # 雖然在 Nix 環境下檢查內部字串較難，但我們可以先檢查本地緩存
+      if [ -f ~/.config/hypr/hyprland.lua ]; then
+          luajit -bl ~/.config/hypr/hyprland.lua > /dev/null
+          if [ $? -ne 0 ]; then
+              echo "❌ 警告：目前的 ~/.config/hypr/hyprland.lua 存在語法錯誤！"
+              echo "請修正代碼後再執行同步，以免無法登入。"
+              read -p "⚠️ 是否強行繼續？ [y/N] " emergency
+              [[ ! "$emergency" =~ ^[Yy]$ ]] && exit 1
+          fi
+      fi
+      echo "----------------------------------------"
       cd /etc/nixos
       git add .
       echo "正在執行 nixos-rebuild..."
-      sudo nixos-rebuild switch --flake .#nixos
+      sudo nixos-rebuild test --flake .#nixos
       if [ $? -eq 0 ]; then
         echo "✅ 更新成功！"
         read -p "🚀 是否同步至 GitHub? [Y/n] " confirm
