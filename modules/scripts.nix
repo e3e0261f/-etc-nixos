@@ -3,8 +3,34 @@
 {
   environment.systemPackages = [
     # --- 原有的 nix-save 腳本 ---
-    (pkgs.writeShellScriptBin "nix-save" ''
-       # ... (保持你之前的代碼，含 Y/N 選項) ...
+     (pkgs.writeShellScriptBin "nix-save" ''
+      #!/bin/bash
+      if [ -n "$http_proxy" ]; then
+        echo "🌐 目前環境：【代理開啟】 -> $http_proxy"
+      else
+        echo "🌿 目前環境：【直連模式】"
+      fi
+      echo "----------------------------------------"
+      cd /etc/nixos
+      git add .
+      echo "正在執行 nixos-rebuild..."
+      sudo nixos-rebuild switch --flake .#nixos
+      if [ $? -eq 0 ]; then
+        echo "✅ 更新成功！"
+        read -p "🚀 是否同步至 GitHub? [Y/n] " confirm
+        confirm=''${confirm:-Y}
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            current_date=$(date "+%Y-%m-%d %H:%M:%S")
+            git commit -m "Save config: $current_date"
+            git push origin main
+            echo "🎉 全部完成！"
+        else
+            echo "📦 已取消同步。"
+        fi
+      else
+        echo "❌ 失敗。"
+        exit 1
+      fi
     '')
 
     # --- 新增的 nix-load 腳本 (雲端同步重置) ---

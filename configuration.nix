@@ -419,6 +419,8 @@ in
     fuzzel           # 👈 你說的 F 開頭啟動器
     waybar           # 狀態欄
     mako             # 通知
+    hyprlauncher
+    
     # 文件管理器 (Thunar 及其配件)
     thunar
     thunar-volman
