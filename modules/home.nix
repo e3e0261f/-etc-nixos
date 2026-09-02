@@ -79,41 +79,49 @@
 
       # 將命令正式更名為 cc
       cc = ''
-        set -l target_dirs "$HOME/下載" "$HOME/Downloads"
         set -l count 0
 
-        for d in $target_dirs
-            if test -d "$d"
-                echo "🔍 正在掃描目錄: $d ..."
-                find "$d" -type f -iname "*.srt" | while read -l f
-                    if string match -q "*.srt.txt" "$f"
-                        continue
+        if test (count $argv) -eq 0
+            # 無參數模式：掃描下載目錄
+            set -l target_dirs "$HOME/下載" "$HOME/Downloads"
+            for d in $target_dirs
+                if test -d "$d"
+                    echo "🔍 正在掃描目錄: $d ..."
+                    find "$d" -type f -iname "*.srt" | while read -l f
+                        if string match -q "*.srt.txt" "$f"
+                            continue
+                        end
+                        
+                        opencc -i "$f" -o "$f.txt" -c s2twp.json
+                        echo "✨ 轉繁成功: $f.txt"
+                        echo "📊 內容差異對比 (-:簡體 | +:繁體):"
+                        
+                        # 呼叫系統原生 diff，帶色彩和統一格式
+                        diff --color=always -u "$f" "$f.txt"
+                        echo "---------------------------------------------------"
+                        
+                        set count (math $count + 1)
                     end
-                
-                    # 執行台式在地化繁體轉換 (s2twp.json)
-                    opencc -i "$f" -o "$f.txt" -c s2twp.json
-                    echo "✨ 轉繁成功: $f.txt"
-                    diff -u "$f" "$f.txt"
-                    set count (math $count + 1)
                 end
             end
-        end
-
-        if test (count $argv) -gt 0
-            # 如果手動指定了檔案參數
+            if test $count -eq 0
+                echo "📭 沒有找到任何需要轉換的 .srt 檔案。"
+            end
+        else
+            # 參數模式：處理單一檔案
             set f $argv[1]
             if test -f "$f"
                 opencc -i "$f" -o "$f.txt" -c s2twp.json
                 echo "✨ 單檔轉繁成功: $f.txt"
-                diff -u "$f" "$f.txt"
+                echo "📊 內容差異對比 (-:簡體 | +:繁體):"
+                
+                # 呼叫系統原生 diff
+                diff --color=always -u "$f" "$f.txt"
             else
                 echo "❌ 找不到檔案: $f"
             end
-        else if test $count -eq 0
-            echo "📭 沒有找到任何需要轉換的 .srt 檔案。"
         end
-    
-        echo "🎉 搞定！"
+        echo "🎉 所有轉換與對比搞定！"
       '';
     };
   };
@@ -126,7 +134,7 @@
       # ... 其他 editor 設定保持不變 ...
       keys.normal = {
         # --- 修正後的剪貼簿指令 ---
-        "y" = "yank_to_clipboard";
+        "y" = "yank_joined_to_clipboard";       # 複製到系統剪貼簿 (支援多光標)
         "p" = "paste_clipboard_after";
         "P" = "paste_clipboard_before";
         # 💡 如果 R 報錯，我們暫時不用它，或者改用這個組合：
@@ -179,7 +187,18 @@
   programs.kitty = {
     enable = true;
     settings = {
-      copy_on_select = "yes"; # 👈 滑鼠選中就自動複製
+      # 💡 關鍵：滑鼠選取時，強制存入「系統剪貼簿」(clipboard)，而不是中鍵剪貼簿 (primary)
+      copy_on_select = "clipboard";
+      
+      # 讓外觀更好看一點的附帶設定
+      background_opacity = "0.85";
+      window_padding_width = 10;
+    };
+    
+    # 💡 強制綁定快捷鍵，確保 Ctrl+Shift+C/V 絕對有效
+    keybindings = {
+      "ctrl+shift+c" = "copy_to_clipboard";
+      "ctrl+shift+v" = "paste_from_clipboard";
     };
   };
 

@@ -156,7 +156,7 @@ in
           }
           sg {
               policy: min_moving_avg
-              filter: subtag(my_sub) && name(keyword: '4')
+              filter: subtag(my_sub) && name(keyword: '倍')
           }
       }
 
