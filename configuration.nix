@@ -380,7 +380,7 @@ in
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
-    luajit
+    luajit wev
 
     # 自定义工具
     nix-save

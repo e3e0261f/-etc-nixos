@@ -69,7 +69,7 @@
       hl.on("hyprland.start", function()
           hl.exec_cmd("uwsm app -- waybar")
           hl.exec_cmd("uwsm app -- fcitx5 -d")
-          hl.exec_cmd("uwsm app -- nm-applet --indicator")
+          -- hl.exec_cmd("uwsm app -- nm-applet --indicator")
       end)
 
       -- 6. 視窗規則
