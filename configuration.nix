@@ -408,6 +408,7 @@ in
     crow-translate
     gimagereader
     tesseract
+    networkmanagerapplet
     # clash-verge-rev
 
     # Wayland 截图支持（如需要）
