@@ -2,44 +2,45 @@
 
 {
   environment.systemPackages = [
+    # --- 原有的 nix-save 腳本 ---
     (pkgs.writeShellScriptBin "nix-save" ''
-      # 1. 偵測代理狀態
-      if [ -n "$http_proxy" ]; then
-        echo "🌐 目前環境：【代理開啟】 -> $http_proxy"
-      else
-        echo "🌿 目前環境：【直連模式】"
-      fi
-      echo "----------------------------------------"
+       # ... (保持你之前的代碼，含 Y/N 選項) ...
+    '')
 
-      # 2. 準備構建
+    # --- 新增的 nix-load 腳本 (雲端同步重置) ---
+    (pkgs.writeShellScriptBin "nix-load" ''
+      set -e # 遇到錯誤立刻停止
+      
+      echo "📥 開始從 GitHub 拉取遠端配置..."
       cd /etc/nixos
-      git add .
 
-      echo "正在執行 nixos-rebuild..."
+      # 1. 準備備份目錄
+      TIMESTAMP=$(date "+%Y%m%d_%H%M%S")
+      BACKUP_DIR="/etc/nixos/old/backup_$TIMESTAMP"
+      mkdir -p "$BACKUP_DIR"
+
+      echo "📦 正在備份目前配置至 $BACKUP_DIR ..."
+      
+      # 2. 移動檔案 (排除 .git, old 資料夾和腳本自己)
+      # 使用 find 找出當前目錄的所有檔案和資料夾，排除不需要移動的
+      find . -maxdepth 1 ! -name "." ! -name ".git" ! -name "old" ! -name "README.md" -exec mv {} "$BACKUP_DIR/" \;
+
+      echo "🔄 正在與遠端倉庫同步 (git reset --hard)..."
+      
+      # 3. 強制同步遠端
+      git fetch origin main
+      git reset --hard origin/main
+
+      echo "🚀 同步完成！準備執行系統構建..."
+      
+      # 4. 執行構建
       sudo nixos-rebuild switch --flake .#nixos
 
-      # 3. 判斷構建結果
       if [ $? -eq 0 ]; then
-        echo "----------------------------------------"
-        echo "✅ 更新成功！"
-        
-        # 4. Y/N 互動選項 (預設為 Y)
-        # -n 1: 只要輸入一個字元就繼續; -p: 提示文字
-        read -p "🚀 是否同步至 GitHub? [Y/n] " confirm
-        confirm=''${confirm:-Y} # 如果直接按回車，預設值為 Y
-
-        if [[ "$confirm" =~ ^[Yy]$ ]]; then
-            current_date=$(date "+%Y-%m-%d %H:%M:%S")
-            git commit -m "Save config: $current_date"
-            
-            echo "正在上傳..."
-            git push origin main
-            echo "🎉 全部完成！設定檔已同步至 GitHub。"
-        else
-            echo "📦 已取消同步。設定檔僅保存在本地 /etc/nixos。"
-        fi
+        echo "✨ 恭喜！系統已成功恢復為遠端最新版本。"
       else
-        echo "❌ 錯誤：nixos-rebuild 失敗，取消後續動作。"
+        echo "❌ 構建失敗，請檢查遠端代碼是否有誤。"
+        echo "💡 你可以在 $BACKUP_DIR 找回剛才的備份。"
         exit 1
       fi
     '')
