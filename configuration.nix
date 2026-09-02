@@ -152,7 +152,7 @@ in
       group {
           proxy {
               policy: min_moving_avg
-              filter: subtag(my_sub) && name(keyword: '新北')
+              filter: subtag(my_sub) && name(keyword: 'I')
           }
           sg {
               policy: min_moving_avg
