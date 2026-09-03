@@ -308,6 +308,13 @@ in
     xwayland.enable = true;
   };
 
+  i18n.inputMethod = {
+    enable = true;
+    type = "ibus";
+    # If you want specific IBus engines (like ibus-chewing, ibus-libpinyin, etc.)
+    # ibus.engines = with pkgs.ibus-engines; [ libpinyin chewing ];
+  };
+
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
