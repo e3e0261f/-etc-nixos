@@ -388,7 +388,7 @@ in
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
     luajit wev socat opencc delta
-    ffmpeg
+    ffmpeg uwsm
 
     # 自定义工具
     nix-save
@@ -412,7 +412,7 @@ in
     tesseract
     networkmanagerapplet
     # clash-verge-rev
-    steam
+    steam mplayer vlc
 
     # Wayland 截图支持（如需要）
     grim
