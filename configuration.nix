@@ -311,8 +311,12 @@ in
   i18n.inputMethod = {
     enable = true;
     type = "ibus";
-    # If you want specific IBus engines (like ibus-chewing, ibus-libpinyin, etc.)
-    # ibus.engines = with pkgs.ibus-engines; [ libpinyin chewing ];
+    
+    # 關鍵：在系統層級注入 rime 引擎外掛
+    ibus.engines = with pkgs.ibus-engines; [
+      rime
+      libpinyin # 可選：如果也想備用拼音
+    ];
   };
 
   xdg.portal = {
