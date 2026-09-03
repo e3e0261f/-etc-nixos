@@ -169,7 +169,8 @@ in
       "clock": {
         // 🎯 英文星期與時間的高度微調區
         // 如果 Friday 偏高，可以在這裡調整 rise='-500'
-        "format": "<span rise='0'>{:%A}</span> <span rise='0'>{:%H:%M}</span>",
+        // 💡 修正：把 %A 和 %H:%M 放在同一個括號裡，解決 C++ 參數缺失報錯！
+        "format": "<span rise='0'>{:%A %H:%M}</span>",
         "format-alt": " {:%Y/%m/%d}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
