@@ -1,4 +1,4 @@
-#  Edit this configuration file to define what should be installed on
+# Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page.
 { config, pkgs, inputs, ... }:
 
@@ -308,14 +308,13 @@ in
     xwayland.enable = true;
   };
 
+  # 💡 關鍵：在系統層級啟用 IBus 並安裝 Rime 引擎
   i18n.inputMethod = {
     enable = true;
     type = "ibus";
-    
-    # 關鍵：在系統層級注入 rime 引擎外掛
     ibus.engines = with pkgs.ibus-engines; [
       rime
-      libpinyin # 可選：如果也想備用拼音
+      libpinyin
     ];
   };
 
@@ -379,8 +378,7 @@ in
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
     luajit wev socat opencc
-    ffmpeg uwsm
-    ibus ibus-engines.rime noto-fonts-cjk-sans
+    ffmpeg
 
     # 自定义工具
     nix-save
