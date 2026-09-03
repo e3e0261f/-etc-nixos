@@ -40,9 +40,8 @@ in
 
     ./hardware-configuration.nix
     ./modules/scripts.nix
-    ./modules/nvim.nix
     ./modules/keyd.nix
-
+    ./modules/helix.nix
   ];
 
 
@@ -368,7 +367,7 @@ in
     alacritty kitty fastfetch tree
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
-    luajit wev socat opencc delta
+    luajit wev socat opencc
     ffmpeg uwsm
 
     # 自定义工具

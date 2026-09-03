@@ -6,7 +6,7 @@
   home.packages = with pkgs; [
     megacmd
     opencc
-    git-delta
+    delta
     aria2
     axel
   ];
