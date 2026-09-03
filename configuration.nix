@@ -50,7 +50,7 @@ in
 	boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  system.nixos.tags = [ "is-ok-ibus" ];
+  system.nixos.tags = [ "is-ok-fcitx" ];
 
     hardware.graphics = {
     enable = true;
