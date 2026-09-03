@@ -20,6 +20,7 @@
       "ipc": true,
       "modules-center": [
         "hyprland/workspaces",
+        "custom/ibus",      // 👈 1. 把輸入法圖示放在這裡
         "pulseaudio",
         "network",
         "cpu",
@@ -27,6 +28,15 @@
         "clock",
         "tray"
       ],
+
+      // 💡 2. 定義 IBus 顯示模組：自動顯示 中/EN，點擊可切換
+      "custom/ibus": {
+        "format": "{}",
+        "exec": "ibus engine 2>/dev/null | grep -q 'rime' && echo 'ㄓ 中' || echo '󰌌 EN'",
+        "interval": 1,
+        "on-click": "ibus engine | grep -q rime && ibus engine xkb:us::eng || ibus engine rime",
+        "tooltip": false
+      },
 
       "hyprland/workspaces": {
         "format": "{name}",
@@ -42,8 +52,7 @@
       "network": {
         "format-wifi": "  {essid}",
         "format-ethernet": "󰈀 Wired",
-        "format-disconnected": "⚠ Disconnected",
-        "tooltip-format": "{ifname}: {ipaddr}"
+        "format-disconnected": "⚠ Disconnected"
       },
 
       "cpu": {
@@ -91,12 +100,12 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     }
 
-    /* 💡 核心修正：為每個模組加上左右外邊距 (margin)，徹底拉開距離 */
-    #workspaces, #pulseaudio, #network, #cpu, #memory, #clock, #tray {
+    #workspaces, #custom-ibus, #pulseaudio, #network, #cpu, #memory, #clock, #tray {
         margin: 0 10px;
         color: #c0caf5;
     }
 
+    #custom-ibus { color: #f7768e; font-weight: bold; }
     #cpu { color: #7dcfff; }
     #memory { color: #bb9af7; }
     #network { color: #9ece6a; }

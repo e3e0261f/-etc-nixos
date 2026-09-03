@@ -50,7 +50,7 @@ in
 	boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  system.nixos.tags = [ "omarchy-hyprland" ];
+  system.nixos.tags = [ "is-ok-ibus" ];
 
     hardware.graphics = {
     enable = true;
