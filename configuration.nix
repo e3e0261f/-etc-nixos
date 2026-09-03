@@ -41,7 +41,7 @@ in
     ./hardware-configuration.nix
     ./modules/scripts.nix
     ./modules/keyd.nix
-    ./modules/helix.nix
+    # ./modules/helix.nix
   ];
 
 
@@ -410,7 +410,8 @@ in
     fuzzel           # 👈 你說的 F 開頭啟動器
     waybar           # 狀態欄
     mako             # 通知
-    hyprlauncher
+    hyprlauncher hyprshutdown
+    hypridle hyprlock hyprpaper hyprpicker
     
     # 文件管理器 (Thunar 及其配件)
     thunar

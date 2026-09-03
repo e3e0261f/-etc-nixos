@@ -19,7 +19,7 @@
 
     functions = {
       logout = ''
-        hyprctl dispatch exit
+        command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'
       '';
       proxy = ''
         if test (count $argv) -eq 0
