@@ -11,6 +11,7 @@
     ./shell.nix
     ./tools.nix
     ./helix.nix
+    ./git.nix
   ];
 
   # 只有版本號留在此處

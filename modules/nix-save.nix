@@ -2,13 +2,12 @@
 
 {
   environment.systemPackages = [
-    # --- 1. nix-test 腳本：安全測試模式 ---
+    # --- 1. nix-test (保持原樣) ---
     (pkgs.writeShellScriptBin "nix-test" ''
       #!/bin/bash
       [ -n "$http_proxy" ] && echo "🌐 代理開啟: $http_proxy" || echo "🌿 直連模式"
       echo "----------------------------------------"
       
-      # Lua 語法預檢
       if [ -f ~/.config/hypr/hyprland.lua ]; then
           luajit -bl ~/.config/hypr/hyprland.lua > /dev/null
           if [ $? -ne 0 ]; then
@@ -30,7 +29,7 @@
       fi
     '')
 
-    # --- 2. nix-save 腳本：正式構建並同步 GitHub ---
+    # --- 2. nix-save (已修復 push 判斷) ---
     (pkgs.writeShellScriptBin "nix-save" ''
       #!/bin/bash
       [ -n "$http_proxy" ] && echo "🌐 代理開啟: $http_proxy" || echo "🌿 直連模式"
@@ -57,8 +56,14 @@
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
             current_date=$(date "+%Y-%m-%d %H:%M:%S")
             git commit -m "Save config: $current_date"
-            git push origin main
-            echo "🎉 全部完成！已同步至 GitHub。"
+            
+            # 💡 精準修復：確保 push 成功才報喜，失敗就報警
+            if git push origin main; then
+                echo "🎉 全部完成！已同步至 GitHub。"
+            else
+                echo "❌ Git 推送失敗，請檢查 SSH 443 埠連線！"
+                exit 1
+            fi
         else
             echo "📦 已取消同步。僅在本地生成世代。"
         fi
@@ -68,7 +73,7 @@
       fi
     '')
 
-    # --- 3. nix-load 腳本：雲端同步重置 ---
+    # --- 3. nix-load (保持原樣) ---
     (pkgs.writeShellScriptBin "nix-load" ''
       set -e
       echo "📥 開始從 GitHub 拉取遠端配置..."

@@ -39,7 +39,7 @@ in
   imports = [ 
 
     ./hardware-configuration.nix
-    ./modules/scripts.nix
+    ./modules/nix-save.nix
     ./modules/keyd.nix
     # ./modules/helix.nix
   ];
