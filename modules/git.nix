@@ -1,18 +1,24 @@
 { pkgs, ... }:
 
 {
-  # 1. 設置 SSH 走 443 埠 (繞過 22 埠干擾)
   programs.ssh = {
     enable = true;
-    extraConfig = ''
-      Host github.com
-        Hostname ssh.github.com
-        Port 443
-        User git
-    '';
+
+    # 💡 使用 Home Manager 標準的 matchBlocks 結構化宣告
+    matchBlocks = {
+      "github.com" = {
+        hostname = "ssh.github.com";
+        port = 443;
+        user = "git";
+      };
+
+      # 如果你希望「所有主機 (*)」預設都走 443 埠，可以把下面這段打開：
+      # "*" = {
+      #   port = 443;
+      # };
+    };
   };
 
-  # 2. 設置 Git 個人信息與 GPG
   programs.git = {
     enable = true;
     settings = {
