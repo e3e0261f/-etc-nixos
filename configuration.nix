@@ -368,7 +368,7 @@ in
     fd ripgrep repgrep ipgrep
     procps toybox lvm2 dust
     luajit wev socat opencc
-    ffmpeg uwsm
+    ffmpeg uwsm ibus ibus-engines.rime
 
     # 自定义工具
     nix-save
