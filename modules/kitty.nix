@@ -3,15 +3,22 @@
 {
   programs.kitty = {
     enable = true;
+    
+    # 💡 1. 設置字體與大小
+    font = {
+      name = "JetBrainsMono Nerd Font";
+      size = 24; # 👈 字號直接設定為 24
+    };
+
     settings = {
-      # 終端機透明度 (呼應你的 Hyprland 磨砂玻璃)
+      # 💡 2. 也可以在 settings 裡明確指定
+      font_size = 24;
+      
       background_opacity = "0.85";
       window_padding_width = 10;
-      
-      # 支援滑鼠選中即複製到系統剪貼簿
       copy_on_select = "clipboard";
     };
-    
+
     keybindings = {
       "ctrl+shift+c" = "copy_to_clipboard";
       "ctrl+shift+v" = "paste_from_clipboard";
