@@ -1,13 +1,9 @@
 { pkgs, ... }:
 
 let
-  # 活動視窗進程遙測探針 (保持運作)
   activeAppTelemetry = pkgs.writeScriptBin "active-app-telemetry" ''
     #!${pkgs.python3}/bin/python3
-    import json
-    import os
-    import subprocess
-    import time
+    import json, os, subprocess, time
 
     STATE_FILE = "/tmp/hypr_active_app_telemetry.json"
 
@@ -15,58 +11,39 @@ let
         try:
             out = subprocess.check_output(["hyprctl", "activewindow", "-j"], text=True)
             data = json.loads(out)
-            if not data or not data.get("pid"):
-                return None
-            return data
-        except Exception:
-            return None
+            return data if data and data.get("pid") else None
+        except: return None
 
     def get_proc_stats(pid):
-        rss_mb = 0
+        rss_mb, sockets, rchar, wchar = 0, 0, 0, 0
         try:
             with open(f"/proc/{pid}/status", "r") as f:
                 for line in f:
                     if line.startswith("VmRSS:"):
                         rss_mb = int(line.split()[1]) // 1024
                         break
-        except Exception:
-            pass
-
-        sockets = 0
+        except: pass
         try:
             fd_dir = f"/proc/{pid}/fd"
             for entry in os.listdir(fd_dir):
                 try:
-                    target = os.readlink(os.path.join(fd_dir, entry))
-                    if target.startswith("socket:"):
+                    if os.readlink(os.path.join(fd_dir, entry)).startswith("socket:"):
                         sockets += 1
-                except Exception:
-                    continue
-        except Exception:
-            pass
-
-        rchar, wchar = 0, 0
+                except: continue
+        except: pass
         try:
             with open(f"/proc/{pid}/io", "r") as f:
                 for line in f:
-                    if line.startswith("rchar:"):
-                        rchar = int(line.split()[1])
-                    elif line.startswith("wchar:"):
-                        wchar = int(line.split()[1])
-        except Exception:
-            pass
-
+                    if line.startswith("rchar:"): rchar = int(line.split()[1])
+                    elif line.startswith("wchar:"): wchar = int(line.split()[1])
+        except: pass
         return rss_mb, sockets, rchar, wchar
 
     def format_bytes(b):
-        if b < 1024:
-            return f"{int(b)}B"
-        elif b < 1024 * 1024:
-            return f"{b/1024:.1f}K"
-        elif b < 1024 * 1024 * 1024:
-            return f"{b/(1024*1024):.1f}M"
-        else:
-            return f"{b/(1024*1024*1024):.1f}G"
+        if b < 1024: return f"{int(b):>3}B"
+        elif b < 1024 * 1024: return f"{b/1024:>4.1f}K"
+        elif b < 1024 * 1024 * 1024: return f"{b/(1024*1024):>4.1f}M"
+        else: return f"{b/(1024*1024*1024):>4.1f}G"
 
     def main():
         win = get_active_window()
@@ -77,16 +54,13 @@ let
         pid = win["pid"]
         app_name = win.get("class") or win.get("initialClass") or "App"
         now = time.time()
-
         rss_mb, sockets, rchar, wchar = get_proc_stats(pid)
 
         state = {}
         if os.path.exists(STATE_FILE):
             try:
-                with open(STATE_FILE, "r") as f:
-                    state = json.load(f)
-            except Exception:
-                state = {}
+                with open(STATE_FILE, "r") as f: state = json.load(f)
+            except: pass
 
         history = state.get(str(pid), [])
         history.append([now, rchar, wchar])
@@ -95,29 +69,49 @@ let
         state = {k: v for k, v in state.items() if os.path.exists(f"/proc/{k}")}
 
         try:
-            with open(STATE_FILE, "w") as f:
-                json.dump(state, f)
-        except Exception:
-            pass
+            with open(STATE_FILE, "w") as f: json.dump(state, f)
+        except: pass
 
-        down_rate_str = "0B/s"
-        up_rate_str = "0B/s"
+        down, up = " 0.0B/s", " 0.0B/s"
         if len(history) >= 2:
-            t_diff = history[-1][0] - history[0][0]
-            if t_diff > 0.8:
-                r_diff = max(0, history[-1][1] - history[0][1])
-                w_diff = max(0, history[-1][2] - history[0][2])
-                down_rate_str = f"{format_bytes(r_diff / t_diff)}/s"
-                up_rate_str = f"{format_bytes(w_diff / t_diff)}/s"
+            td = history[-1][0] - history[0][0]
+            if td > 0.8:
+                rd = max(0, history[-1][1] - history[0][1])
+                wd = max(0, history[-1][2] - history[0][2])
+                down = f"{format_bytes(rd / td)}/s"
+                up = f"{format_bytes(wd / td)}/s"
 
-        #  (記憶體) 󰌘 (連線) 󰇚 (下載) 󰕒 (上傳)
-        text = f"{app_name}   {rss_mb}M  󰌘 {sockets}  󰇚 {down_rate_str} 󰕒 {up_rate_str}"
-        tooltip = f"應用名稱: {app_name}\n進程 PID: {pid}\n物理記憶體 (RSS): {rss_mb} MB\n活躍 Socket 連線: {sockets} 個\n近 1 分鐘平均吞吐: 下載 {down_rate_str} | 上傳 {up_rate_str}"
-
+        text = f"{app_name}   {rss_mb:>4}M  󰌘 {sockets:>2}  󰇚 {down} 󰕒 {up}"
+        tooltip = f"應用: {app_name}\nPID: {pid}\nRSS: {rss_mb} MB\nSockets: {sockets}\nDL: {down} | UL: {up}"
         print(json.dumps({"text": text, "tooltip": tooltip}))
 
-    if __name__ == "__main__":
-        main()
+    if __name__ == "__main__": main()
+  '';
+
+  # 💡 日文與週數生成腳本 (帶獨立 Pango Rise 控制)
+  jpDayScript = pkgs.writeShellScriptBin "jp-day" ''
+    #!/bin/bash
+    W=$(date +%V)
+    D=$(date +%u)
+    case $D in
+      1) J="月曜"; C="youbi-getsu";;
+      2) J="火曜"; C="youbi-ka";;
+      3) J="水曜"; C="youbi-sui";;
+      4) J="木曜"; C="youbi-moku";;
+      5) J="金曜"; C="youbi-kin";;
+      6) J="土曜"; C="youbi-do";;
+      7) J="日曜"; C="youbi-nichi";;
+    esac
+    
+    # 🎯 高度微調區 (單位：微米 pango units)
+    # 若數字偏高，就把 W_RISE 調成負數 (-500)；若漢字偏高，把 J_RISE 調成負數 (-1500)
+    W_RISE="0"
+    J_RISE="-1500"
+    
+    TEXT="<span rise='$W_RISE'>$W</span> <span rise='$J_RISE'>$J</span>"
+    cat <<EOF
+    {"text": "$TEXT", "class": "$C"}
+    EOF
   '';
 in
 {
@@ -146,8 +140,8 @@ in
         "network",
         "cpu",
         "memory",
-        "custom/jp-day",       // 👈 1. 輸出：金曜日 第36週
-        "clock",               // 👈 2. 輸出：Friday 05:15 (點擊翻牌日期 + 懸停日曆)
+        "custom/jp-day",
+        "clock",
         "tray"
       ],
 
@@ -165,17 +159,18 @@ in
         "tooltip": false
       },
 
-      // 💡 日本曜日 + 一年中的第幾週 (純 Shell 快速安全輸出，絕對不崩潰)
       "custom/jp-day": {
-        "exec": "sh -c 'case $(date +%u) in 1) J=月曜日;; 2) J=火曜日;; 3) J=水曜日;; 4) J=木曜日;; 5) J=金曜日;; 6) J=土曜日;; 7) J=日曜日;; esac; echo \"$J 第$(date +%V)週\"'",
+        "exec": "${jpDayScript}/bin/jp-day",
+        "return-type": "json",
         "interval": 60,
         "tooltip": false
       },
 
-      // 💡 時鐘核心：純淨合規的 C++ chrono 格式
       "clock": {
-        "format": "{:%A  %H:%M}",
-        "format-alt": " {:%Y年%m月%d日}",
+        // 🎯 英文星期與時間的高度微調區
+        // 如果 Friday 偏高，可以在這裡調整 rise='-500'
+        "format": "<span rise='0'>{:%A}</span> <span rise='0'>{:%H:%M}</span>",
+        "format-alt": " {:%Y/%m/%d}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
@@ -202,31 +197,12 @@ in
         "tooltip-format": "{ifname}: {ipaddr} | 訊號強度: {signalStrength}%"
       },
 
-      "hyprland/workspaces": {
-        "format": "{name}",
-        "on-click": "activate"
-      },
-
-      "pulseaudio": {
-        "format": "  {volume}%",
-        "format-muted": "󰝟 Muted",
-        "on-click": "pavucontrol"
-      },
-
-      "cpu": {
-        "format": "  {usage}%",
-        "interval": 2
-      },
-
-      "memory": {
-        "format": "  {percentage}%",
-        "interval": 2
-      },
-
-      "tray": {
-        "icon-size": 16,
-        "spacing": 8
-      }
+      "hyprland/workspaces": { "format": "{name}", "on-click": "activate" },
+      "pulseaudio": { "format": "  {volume:>3}%", "format-muted": "󰝟 Muted", "on-click": "pavucontrol" },
+      // 💡 {:>2} 保證個位數和十位數佔用的寬度完全一樣，防止任務欄抖動
+      "cpu": { "format": "  {usage:>2}%", "interval": 2 },
+      "memory": { "format": "  {percentage:>2}%", "interval": 2 },
+      "tray": { "icon-size": 16, "spacing": 8 }
     }
   '';
 
@@ -234,24 +210,22 @@ in
     * {
         font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Noto Sans CJK TC", sans-serif;
         font-size: 13px;
+        /* 💡 終極防抖：強制數字等寬。1和8佔用相同像素！ */
+        font-variant-numeric: tabular-nums; 
     }
 
-    window#waybar {
-        background-color: transparent;
-        transition: all 0.3s;
-    }
+    window#waybar { background-color: transparent; transition: all 0.3s; }
+    window#waybar.hidden { opacity: 0; margin-bottom: -50px; }
 
-    window#waybar.hidden {
-        opacity: 0;
-        margin-bottom: -50px;
-    }
-
+    /* 💡 黃金比例圓角長方形，並加上物理慣性的絲滑動畫 */
     .modules-center {
-        background: rgba(26, 27, 38, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 2px 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        background: rgba(26, 27, 38, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px; /* 👈 從死圓的20px改為高質感的14px超橢圓 */
+        padding: 4px 16px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+        /* 👈 長度改變時，展現果凍般的阻尼絲滑滑動 */
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
     }
 
     #workspaces, #custom-app-telemetry, #custom-population, #pulseaudio, #network, #cpu, #memory, #custom-jp-day, #clock, #tray {
@@ -259,34 +233,29 @@ in
         color: #c0caf5;
     }
 
-    /* 活動視窗進程遙測專屬樣式 */
-    #custom-app-telemetry {
-        color: #2ac3de;
-        font-weight: bold;
-        background: rgba(41, 169, 219, 0.12);
-        padding: 0 10px;
-        border-radius: 12px;
-    }
+    #custom-app-telemetry { color: #2ac3de; font-weight: bold; background: rgba(41, 169, 219, 0.12); padding: 0 10px; border-radius: 10px; }
+    #custom-population { font-size: 11px; font-weight: bold; color: #7aa2f7; }
 
-    #custom-population {
-        font-size: 11px;
-        font-weight: bold;
-        color: #7aa2f7;
-    }
+    /* 呼吸燈動畫 */
+    @keyframes pulse-clock { 0% {text-shadow: 0 0 2px #e0af68, 0 0 4px #e0af68;} 50% {text-shadow: 0 0 4px #e0af68, 0 0 12px #ffb300, 0 0 20px #ff9800;} 100% {text-shadow: 0 0 2px #e0af68, 0 0 4px #e0af68;} }
+    @keyframes pulse-getsu { 0% {text-shadow: 0 0 2px #b2ebf2;} 50% {text-shadow: 0 0 5px #b2ebf2, 0 0 15px #80deea, 0 0 22px #00bcd4;} 100% {text-shadow: 0 0 2px #b2ebf2;} }
+    @keyframes pulse-ka { 0% {text-shadow: 0 0 2px #ff5252;} 50% {text-shadow: 0 0 5px #ff5252, 0 0 15px #ff1744, 0 0 24px #d50000;} 100% {text-shadow: 0 0 2px #ff5252;} }
+    @keyframes pulse-sui { 0% {text-shadow: 0 0 2px #00f0ff;} 50% {text-shadow: 0 0 5px #00f0ff, 0 0 15px #00c853, 0 0 22px #009688;} 100% {text-shadow: 0 0 2px #00f0ff;} }
+    @keyframes pulse-moku { 0% {text-shadow: 0 0 2px #76ff03;} 50% {text-shadow: 0 0 6px #76ff03, 0 0 16px #00e676, 0 0 25px #00c853;} 100% {text-shadow: 0 0 2px #76ff03;} }
+    @keyframes pulse-kin { 0% {text-shadow: 0 0 2px #ffd54f;} 50% {text-shadow: 0 0 6px #ffd54f, 0 0 16px #ffb300, 0 0 26px #ff8f00;} 100% {text-shadow: 0 0 2px #ffd54f;} }
+    @keyframes pulse-do { 0% {text-shadow: 0 0 2px #e0a96d;} 50% {text-shadow: 0 0 5px #e0a96d, 0 0 14px #b07d62, 0 0 20px #7f4f24;} 100% {text-shadow: 0 0 2px #e0a96d;} }
+    @keyframes pulse-nichi { 0% {text-shadow: 0 0 2px #ff9800;} 50% {text-shadow: 0 0 6px #ff9800, 0 0 16px #f57c00, 0 0 28px #e65100;} 100% {text-shadow: 0 0 2px #ff9800;} }
 
-    /* 日本曜日 + 週數 (粉紫色) */
-    #custom-jp-day {
-        color: #bb9af7;
-        font-weight: bold;
-        margin-right: 2px;
-    }
+    #custom-jp-day { font-weight: bold; margin-right: 4px; padding: 0 10px; transition: all 0.5s ease; }
+    #custom-jp-day.youbi-getsu { color: #e0f7fa; animation: pulse-getsu 4s ease-in-out infinite; }
+    #custom-jp-day.youbi-ka    { color: #ff3838; animation: pulse-ka 3.5s ease-in-out infinite; }
+    #custom-jp-day.youbi-sui   { color: #2de2e6; animation: pulse-sui 4.5s ease-in-out infinite; }
+    #custom-jp-day.youbi-moku  { color: #39ff14; animation: pulse-moku 4s ease-in-out infinite; }
+    #custom-jp-day.youbi-kin   { color: #fff176; animation: pulse-kin 3.8s ease-in-out infinite; }
+    #custom-jp-day.youbi-do    { color: #d4a373; animation: pulse-do 5s ease-in-out infinite; }
+    #custom-jp-day.youbi-nichi { color: #ffa726; animation: pulse-nichi 3s ease-in-out infinite; }
 
-    /* 英文星期 + 時間 (金色) */
-    #clock {
-        color: #e0af68;
-        margin-left: 2px;
-    }
-
+    #clock { color: #e0af68; font-weight: bold; margin-left: 2px; animation: pulse-clock 4s ease-in-out infinite; }
     #network { color: #9ece6a; }
     #cpu { color: #7dcfff; }
     #memory { color: #bb9af7; }
