@@ -211,7 +211,6 @@ in
         font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Noto Sans CJK TC", sans-serif;
         font-size: 13px;
         /* 💡 終極防抖：強制數字等寬。1和8佔用相同像素！ */
-        font-variant-numeric: tabular-nums; 
     }
 
     window#waybar { background-color: transparent; transition: all 0.3s; }
