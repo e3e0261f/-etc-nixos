@@ -290,26 +290,7 @@ in
     LC_TIME = "zh_TW.UTF-8";
   };
 
-
-  # fcitx5
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.waylandFrontend = true; # 強烈建議加上這行，對 Wayland 支援更好
-    fcitx5.addons = with pkgs; [ fcitx5-gtk qt6Packages.fcitx5-chinese-addons ];
-  };
-
-  # 自動啟動 fcitx5
-  systemd.user.services.fcitx5-daemon = {
-    description = "Fcitx5 input method editor";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.fcitx5}/bin/fcitx5";
-      Restart = "on-failure";
-    };
-  };
-
+  
   # 字體
   fonts.packages = with pkgs; [
     font-awesome_4
