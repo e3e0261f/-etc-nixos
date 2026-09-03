@@ -21,6 +21,11 @@ in
     recursive = true;
   };
 
+  home.sessionVariables = {
+  XMODIFIERS = "@im=fcitx";
+  # 取消 GTK_IM_MODULE 與 QT_IM_MODULE
+  };
+
   # 3. 外觀配置：橫排選詞、大字體、Nord-Dark 皮膚
   xdg.configFile."fcitx5/conf/classicui.conf".text = ''
     Font="Noto Sans CJK TC 18"
