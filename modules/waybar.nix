@@ -3,7 +3,10 @@
 {
   programs.waybar = {
     enable = true;
-    systemd.enable = true;
+    systemd = {
+      enable = true;
+      target = "graphical-session.target";
+    };
   };
 
   xdg.configFile."waybar/config.jsonc".text = ''
@@ -21,24 +24,46 @@
         "network",
         "cpu",
         "memory",
-        "custom/clock-it",
+        "clock",
         "tray"
       ],
-      "custom/clock-it": {
-        "exec": "date '+第%V週 | %m/%d %A | %H:%M'",
-        "interval": 60
+      "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate"
+      },
+      "clock": {
+        "format": " {:%H:%M}"
       },
       "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-icons": { "default": ["", "", ""] }
+        "format-icons": {
+          "default": ["", "", ""]
+        }
       }
     }
   '';
 
   xdg.configFile."waybar/style.css".text = ''
-    * { font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC"; font-size: 13px; }
-    window#waybar { background-color: transparent; transition: all 0.3s; }
-    window#waybar.hidden { opacity: 0; margin-bottom: -50px; }
-    .modules-center { background: rgba(26, 27, 38, 0.85); border-radius: 20px; padding: 2px 15px; }
+    * {
+        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC";
+        font-size: 13px;
+    }
+    window#waybar {
+        background-color: transparent;
+        transition: all 0.3s;
+    }
+    window#waybar.hidden {
+        opacity: 0;
+        margin-bottom: -50px;
+    }
+    .modules-center {
+        background: rgba(26, 27, 38, 0.85);
+        border-radius: 20px;
+        padding: 2px 15px;
+    }
+    #workspaces, #clock, #pulseaudio {
+        margin: 0 8px;
+        color: #c0caf5;
+    }
   '';
 }
