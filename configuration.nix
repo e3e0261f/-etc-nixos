@@ -295,6 +295,10 @@ in
     font-awesome_4
     noto-fonts-cjk-sans
     noto-fonts-color-emoji  # 👈 將 noto-fonts-emoji 改成這個
+    # 2. 💡 關鍵：把上面那 10 個倉庫的全部符號一網打盡！
+    nerd-fonts.jetbrains-mono # 自帶全套開發者圖示的等寬字體
+    nerd-fonts.symbols-only   # 獨立的「純圖示符號字庫」(補全所有缺失符號)
+    font-awesome              # 官方 Font Awesome 6
   ];
 
   # --- 4. 桌面環境與圖形介面 ---

@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  # 💡 改用 writeScriptBin，避開 flake8 的行長與空行檢查，直接執行 Python 3
+  # 活動視窗進程遙測探針 (保持運作)
   activeAppTelemetry = pkgs.writeScriptBin "active-app-telemetry" ''
     #!${pkgs.python3}/bin/python3
     import json
@@ -110,6 +110,7 @@ let
                 down_rate_str = f"{format_bytes(r_diff / t_diff)}/s"
                 up_rate_str = f"{format_bytes(w_diff / t_diff)}/s"
 
+        #  (記憶體) 󰌘 (連線) 󰇚 (下載) 󰕒 (上傳)
         text = f"{app_name}   {rss_mb}M  󰌘 {sockets}  󰇚 {down_rate_str} 󰕒 {up_rate_str}"
         tooltip = f"應用名稱: {app_name}\n進程 PID: {pid}\n物理記憶體 (RSS): {rss_mb} MB\n活躍 Socket 連線: {sockets} 個\n近 1 分鐘平均吞吐: 下載 {down_rate_str} | 上傳 {up_rate_str}"
 
@@ -120,7 +121,6 @@ let
   '';
 in
 {
-  # ... 下面的 programs.waybar、config.jsonc 和 style.css 保持不變 ...
   programs.waybar = {
     enable = true;
     systemd = {
@@ -140,18 +140,17 @@ in
       "ipc": true,
       "modules-center": [
         "hyprland/workspaces",
-        "custom/app-telemetry", // 👈 取代無聊的 window 標題，改為硬核活動進程遙測
+        "custom/app-telemetry",
         "custom/population",
         "pulseaudio",
         "network",
         "cpu",
         "memory",
-        "custom/jp-day",
-        "clock",
+        "custom/jp-day",       // 👈 1. 輸出：金曜日 第36週
+        "clock",               // 👈 2. 輸出：Friday 05:15 (點擊翻牌日期 + 懸停日曆)
         "tray"
       ],
 
-      // --- 💡 核心：活動視窗進程遙測模組 ---
       "custom/app-telemetry": {
         "exec": "${activeAppTelemetry}/bin/active-app-telemetry",
         "return-type": "json",
@@ -166,14 +165,16 @@ in
         "tooltip": false
       },
 
+      // 💡 日本曜日 + 一年中的第幾週 (純 Shell 快速安全輸出，絕對不崩潰)
       "custom/jp-day": {
-        "exec": "sh -c 'case $(date +%u) in 1) echo 月曜日;; 2) echo 火曜日;; 3) echo 水曜日;; 4) echo 木曜日;; 5) echo 金曜日;; 6) echo 土曜日;; 7) echo 日曜日;; esac'",
+        "exec": "sh -c 'case $(date +%u) in 1) J=月曜日;; 2) J=火曜日;; 3) J=水曜日;; 4) J=木曜日;; 5) J=金曜日;; 6) J=土曜日;; 7) J=日曜日;; esac; echo \"$J 第$(date +%V)週\"'",
         "interval": 60,
         "tooltip": false
       },
 
+      // 💡 時鐘核心：純淨合規的 C++ chrono 格式
       "clock": {
-        "format": "第{:%V}週 {:%A} {:%H:%M}",
+        "format": "{:%A  %H:%M}",
         "format-alt": " {:%Y年%m月%d日}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
@@ -231,7 +232,7 @@ in
 
   xdg.configFile."waybar/style.css".text = ''
     * {
-        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC";
+        font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Noto Sans CJK TC", sans-serif;
         font-size: 13px;
     }
 
@@ -254,11 +255,11 @@ in
     }
 
     #workspaces, #custom-app-telemetry, #custom-population, #pulseaudio, #network, #cpu, #memory, #custom-jp-day, #clock, #tray {
-        margin: 0 8px;
+        margin: 0 6px;
         color: #c0caf5;
     }
 
-    /* 💡 活動視窗進程遙測專屬配色：亮眼的青藍色 */
+    /* 活動視窗進程遙測專屬樣式 */
     #custom-app-telemetry {
         color: #2ac3de;
         font-weight: bold;
@@ -273,12 +274,14 @@ in
         color: #7aa2f7;
     }
 
+    /* 日本曜日 + 週數 (粉紫色) */
     #custom-jp-day {
         color: #bb9af7;
         font-weight: bold;
         margin-right: 2px;
     }
 
+    /* 英文星期 + 時間 (金色) */
     #clock {
         color: #e0af68;
         margin-left: 2px;
