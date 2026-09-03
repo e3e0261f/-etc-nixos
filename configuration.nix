@@ -308,13 +308,16 @@ in
     xwayland.enable = true;
   };
 
-  # 💡 關鍵：在系統層級啟用 IBus 並安裝 Rime 引擎
+  # 💡 啟用系統級 Fcitx5，並打包 Rime 引擎與 Nord 皮膚
   i18n.inputMethod = {
     enable = true;
-    type = "ibus";
-    ibus.engines = with pkgs.ibus-engines; [
-      rime
-      libpinyin
+    type = "fcitx5";
+    fcitx5.waylandFrontend = true; # 👈 原生 Wayland 支持，永不報錯
+    fcitx5.addons = with pkgs; [
+      fcitx5-gtk
+      fcitx5-rime                      # 👈 核心：Rime 引擎
+      qt6Packages.fcitx5-chinese-addons
+      fcitx5-nord                      # 👈 Nord 深色皮膚
     ];
   };
 
@@ -403,6 +406,8 @@ in
     networkmanagerapplet
     # clash-verge-rev
     steam mplayer vlc
+    easyeffects
+    pavucontrol
 
     # Wayland 截图支持（如需要）
     grim
