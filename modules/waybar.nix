@@ -13,14 +13,14 @@
     {
       "layer": "top",
       "position": "bottom",
-      "height": 34,
+      "height": 38,             // 💡 稍微增加一點高度容納雙行
       "margin-bottom": 8,
       "exclusive": false,
       "fixed-center": true,
       "ipc": true,
       "modules-center": [
         "hyprland/workspaces",
-        "custom/ibus",      // 👈 1. 把輸入法圖示放在這裡
+        "custom/population",    // 👈 雙行世界人口模組
         "pulseaudio",
         "network",
         "cpu",
@@ -29,12 +29,11 @@
         "tray"
       ],
 
-      // 💡 2. 定義 IBus 顯示模組：自動顯示 中/EN，點擊可切換
-      "custom/ibus": {
+      // 💡 雙行人口模組配置
+      "custom/population": {
+        "exec": "awk 'BEGIN{printf \"%.0f\\nPPL\\n\", 8185000000 + (systime() - 1704067200)*2.4}'",
         "format": "{}",
-        "exec": "ibus engine 2>/dev/null | grep -q 'rime' && echo 'ㄓ 中' || echo '󰌌 EN'",
-        "interval": 1,
-        "on-click": "ibus engine | grep -q rime && ibus engine xkb:us::eng || ibus engine rime",
+        "interval": 2,          // 每 2 秒刷新一次人口數據
         "tooltip": false
       },
 
@@ -42,33 +41,27 @@
         "format": "{name}",
         "on-click": "activate"
       },
-
       "pulseaudio": {
         "format": "  {volume}%",
         "format-muted": "󰝟 Muted",
         "on-click": "pavucontrol"
       },
-
       "network": {
         "format-wifi": "  {essid}",
         "format-ethernet": "󰈀 Wired",
         "format-disconnected": "⚠ Disconnected"
       },
-
       "cpu": {
         "format": "  {usage}%",
         "interval": 2
       },
-
       "memory": {
         "format": "  {percentage}%",
         "interval": 2
       },
-
       "clock": {
         "format": "  {:%H:%M}"
       },
-
       "tray": {
         "icon-size": 16,
         "spacing": 8
@@ -100,12 +93,19 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     }
 
-    #workspaces, #custom-ibus, #pulseaudio, #network, #cpu, #memory, #clock, #tray {
+    #workspaces, #custom-population, #pulseaudio, #network, #cpu, #memory, #clock, #tray {
         margin: 0 10px;
         color: #c0caf5;
     }
 
-    #custom-ibus { color: #f7768e; font-weight: bold; }
+    /* 💡 雙行專屬樣式：緊湊行高與精緻字體 */
+    #custom-population {
+        font-size: 11px;
+        font-weight: bold;
+        color: #7aa2f7;
+        margin: 0 8px;
+    }
+
     #cpu { color: #7dcfff; }
     #memory { color: #bb9af7; }
     #network { color: #9ece6a; }
