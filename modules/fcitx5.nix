@@ -52,4 +52,25 @@ in
     [GroupOrder]
     0=Default
   '';
+
+    # 💡 真正的「全自動守護神」
+  systemd.user.services.fcitx5-daemon = {
+    Unit = {
+      Description = "Fcitx5 Input Method Daemon";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      # 💡 讓 systemd 在前台實時監控它，崩潰立即重啟
+      ExecStart = "/run/current-system/sw/bin/fcitx5";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
 }
