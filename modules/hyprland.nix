@@ -46,6 +46,11 @@
         float = true,
         center = "1"
     })
+
+    hl.window_rule({ name = "float_fcitx", match = { class = "org.fcitx.fcitx5-config-qt" }, float = true })
+    hl.window_rule({ name = "float_pavu", match = { class = "pavucontrol" }, float = true })
+    hl.window_rule({ name = "center_float", match = { float = true }, center = true })
+
     
   '';
 
@@ -78,6 +83,10 @@
     hl.bind(mainMod .. " + CTRL + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy && notify-send "截圖成功" "圖片已存入剪貼簿"'))
     hl.bind(mainMod .. " + SHIFT + CTRL + S", hl.dsp.exec_cmd("trans-gui"))
 
+
+    -- 💡 新增：Alt + Tab 在當前工作區切換下一個視窗 (完全符合 Windows/Mac 習慣)
+    --hl.bind("ALT + Tab", hl.dsp.layout(cyclenext))
+    --hl.bind("ALT + SHIFT + Tab", hl.dsp.layout(cycleprev))
 
     -- Move focus with mainMod + arrow keys
     hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -269,7 +278,32 @@
         },
     })
 
-    
+
+    -- 外觀模組 (looknfeel.lua)
+    hl.config({
+        general = {
+            gaps_in = 5, gaps_out = 20, border_size = 2, layout = "dwindle",
+            col = {
+                active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+                inactive_border = "rgba(595959aa)"
+            }
+        },
+        decoration = {
+            rounding = 10,
+            
+            -- 💡 新增 1：非活動視窗微透明 (90% 透明度)
+            inactive_opacity = 0.9,
+            active_opacity = 1.0,
+
+            -- 💡 新增 2：背景視窗自動變暗 15%，強制你的眼睛聚焦在當前活動視窗！
+            dim_inactive = true,
+            dim_strength = 0.15,
+
+            blur = { enabled = true, size = 3, passes = 1 }
+        }
+    })
+
+   
   '';
 
   # 8. 視窗規則模組
