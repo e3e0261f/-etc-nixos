@@ -314,7 +314,7 @@ in
 
   programs.hyprland = {
     enable = true;
-    withUWSM = true;
+    withUWSM = false;
     xwayland.enable = true;
   };
 

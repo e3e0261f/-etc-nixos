@@ -27,7 +27,6 @@
     require("window_rules")
     require("bindings")
     require("MONITORS")
-    require("AUTOSTART")
     require("ENVIRONMENT")
     require("LOOKANDFEEL")
     require("MISC")
@@ -68,7 +67,7 @@
     hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
     hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.pin({ action = "toggle" }))
     hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"))
-    hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy && notify-send "截圖成功" "圖片已存入剪貼簿"'))
+    hl.bind(mainMod .. " + CTRL + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy && notify-send "截圖成功" "圖片已存入剪貼簿"'))
 
 
     -- Move focus with mainMod + arrow keys
@@ -118,18 +117,6 @@
 
   # 4. 視窗規則模組
   xdg.configFile."MYHYprLUa/MONITORS.lua".text = ''
-    
-  '';
-
-  # 5. 視窗規則模組
-  xdg.configFile."MYHYprLUa/AUTOSTART.lua".text = ''
-    hl.on("hyprland.start", function () 
-      hl.exec_cmd("kitty")
-      hl.exec_cmd("uwsm app -- waybar")
-      hl.exec_cmd("uwsm app -- fcitx5 -d")
-      hl.exec_cmd("uwsm app -- nm-applet --indicator")
-      hl.exec_cmd("uwsm app -- chromium")
-    end)
     
   '';
 
