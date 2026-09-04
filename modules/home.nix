@@ -15,7 +15,13 @@
     ./fcitx5.nix
     ./mako.nix
     ./fuzzel.nix
+    ./scripts.nix
   ];
+
+  home.sessionVariables = {
+    # 這是所有 GTK 程式 (包含你彈出的通知、輸入法設定) 的字體大小總開關
+    GTK_FONT_NAME = "Noto Sans CJK TC 16";
+  };
 
   # 💡 確保 Waybar 由 Systemd 管理，並掛載在 Hyprland 會話上
   programs.waybar = {
