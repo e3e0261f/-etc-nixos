@@ -3,9 +3,10 @@
 {
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false; 
 
     # 💡 使用 Home Manager 標準的 matchBlocks 結構化宣告
-    matchBlocks = {
+    settings = {
       "github.com" = {
         hostname = "ssh.github.com";
         port = 443;
