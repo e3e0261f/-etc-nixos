@@ -288,6 +288,12 @@ in
     LC_TELEPHONE = "zh_TW.UTF-8";
     LC_TIME = "zh_TW.UTF-8";
   };
+    # 确保 EasyEffects 所需的 UI 翻译支持已包含在系统支持的语言包中
+  i18n.supportedLocales = [
+    "en_US.UTF-8/UTF-8"
+    "zh_TW.UTF-8/UTF-8"
+    "zh_CN.UTF-8/UTF-8"
+  ];
 
   
   # 字體
@@ -376,7 +382,7 @@ in
     enableSSHSupport = true; # 讓 GPG 密鑰也能當 SSH 密鑰用
     pinentryPackage = pkgs.pinentry-gnome3;
   };
-
+  
   # --- 6. 軟體安裝清單 (整合你之前 nix profile 的所有軟體) ---
   environment.systemPackages = with pkgs; [
     # 終端機與基礎工具
