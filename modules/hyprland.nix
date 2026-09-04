@@ -27,7 +27,7 @@
     require("window_rules")
     require("bindings")
     require("MONITORS")
-    require("AUTOSTART")
+    --require("AUTOSTART")
     require("ENVIRONMENT")
     require("LOOKANDFEEL")
     require("MISC")
@@ -131,7 +131,8 @@
 
   # 5. 視窗規則模組
   xdg.configFile."MYHYprLUa/AUTOSTART.lua".text = ''
-    hl.on("hyprland.start", function () 
+    hl.on("hyprland.start", function ()
+      hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
       hl.exec_cmd("kitty")
       hl.exec_cmd("waybar")
       hl.exec_cmd("fcitx5 -d")

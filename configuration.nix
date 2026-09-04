@@ -50,7 +50,7 @@ in
 	boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  system.nixos.tags = [ "is-ok-fcitx" ];
+  system.nixos.tags = [ "UN-UWSM" ];
 
     hardware.graphics = {
     enable = true;
