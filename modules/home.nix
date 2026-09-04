@@ -13,6 +13,8 @@
     ./helix.nix
     ./git.nix
     ./fcitx5.nix
+    ./mako.nix
+    ./fuzzel.nix
   ];
 
   # 只有版本號留在此處
