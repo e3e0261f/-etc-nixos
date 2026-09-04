@@ -235,30 +235,71 @@ in
 
     #custom-app-telemetry { color: #2ac3de; font-weight: bold; background: rgba(41, 169, 219, 0.12); padding: 0 10px; border-radius: 10px; }
     #custom-population { font-size: 11px; font-weight: bold; color: #7aa2f7; }
+    /* =========================================================================
+       ✨ 潛意識級呼吸燈 (Ambient Pulse) - 極緩慢、極微小的擴張
+       ========================================================================= */
+    /* 刪除 pulse-clock，時鐘不再呼吸 */
+    
+    @keyframes pulse-getsu {
+        0%   { text-shadow: 0 0 2px #b2ebf2, 0 0 6px #80deea; }
+        50%  { text-shadow: 0 0 2px #b2ebf2, 0 0 8px #80deea, 0 0 12px #00bcd4; }
+        100% { text-shadow: 0 0 2px #b2ebf2, 0 0 6px #80deea; }
+    }
+    @keyframes pulse-ka {
+        0%   { text-shadow: 0 0 2px #ff5252, 0 0 6px #ff1744; }
+        50%  { text-shadow: 0 0 3px #ff5252, 0 0 8px #ff1744, 0 0 12px #d50000; }
+        100% { text-shadow: 0 0 2px #ff5252, 0 0 6px #ff1744; }
+    }
+    @keyframes pulse-sui {
+        0%   { text-shadow: 0 0 2px #00f0ff, 0 0 6px #00c853; }
+        50%  { text-shadow: 0 0 3px #00f0ff, 0 0 8px #00c853, 0 0 12px #009688; }
+        100% { text-shadow: 0 0 2px #00f0ff, 0 0 6px #00c853; }
+    }
+    @keyframes pulse-moku {
+        0%   { text-shadow: 0 0 2px #76ff03, 0 0 6px #00e676; }
+        50%  { text-shadow: 0 0 3px #76ff03, 0 0 8px #00e676, 0 0 14px #00c853; }
+        100% { text-shadow: 0 0 2px #76ff03, 0 0 6px #00e676; }
+    }
+    @keyframes pulse-kin {
+        0%   { text-shadow: 0 0 2px #ffd54f, 0 0 6px #ffb300, 0 0 8px #ff8f00; }
+        50%  { text-shadow: 0 0 3px #ffd54f, 0 0 8px #ffb300, 0 0 12px #ff8f00; }
+        100% { text-shadow: 0 0 2px #ffd54f, 0 0 6px #ffb300, 0 0 8px #ff8f00; }
+    }
+    @keyframes pulse-do {
+        0%   { text-shadow: 0 0 2px #e0a96d, 0 0 6px #b07d62; }
+        50%  { text-shadow: 0 0 3px #e0a96d, 0 0 8px #b07d62, 0 0 12px #7f4f24; }
+        100% { text-shadow: 0 0 2px #e0a96d, 0 0 6px #b07d62; }
+    }
+    @keyframes pulse-nichi {
+        0%   { text-shadow: 0 0 2px #ff9800, 0 0 6px #f57c00; }
+        50%  { text-shadow: 0 0 3px #ff9800, 0 0 8px #f57c00, 0 0 14px #e65100; }
+        100% { text-shadow: 0 0 2px #ff9800, 0 0 6px #f57c00; }
+    }
 
-    /* 呼吸燈動畫 */
-    @keyframes pulse-clock { 0% {text-shadow: 0 0 2px #e0af68, 0 0 4px #e0af68;} 50% {text-shadow: 0 0 4px #e0af68, 0 0 12px #ffb300, 0 0 20px #ff9800;} 100% {text-shadow: 0 0 2px #e0af68, 0 0 4px #e0af68;} }
-    @keyframes pulse-getsu { 0% {text-shadow: 0 0 2px #b2ebf2;} 50% {text-shadow: 0 0 5px #b2ebf2, 0 0 15px #80deea, 0 0 22px #00bcd4;} 100% {text-shadow: 0 0 2px #b2ebf2;} }
-    @keyframes pulse-ka { 0% {text-shadow: 0 0 2px #ff5252;} 50% {text-shadow: 0 0 5px #ff5252, 0 0 15px #ff1744, 0 0 24px #d50000;} 100% {text-shadow: 0 0 2px #ff5252;} }
-    @keyframes pulse-sui { 0% {text-shadow: 0 0 2px #00f0ff;} 50% {text-shadow: 0 0 5px #00f0ff, 0 0 15px #00c853, 0 0 22px #009688;} 100% {text-shadow: 0 0 2px #00f0ff;} }
-    @keyframes pulse-moku { 0% {text-shadow: 0 0 2px #76ff03;} 50% {text-shadow: 0 0 6px #76ff03, 0 0 16px #00e676, 0 0 25px #00c853;} 100% {text-shadow: 0 0 2px #76ff03;} }
-    @keyframes pulse-kin { 0% {text-shadow: 0 0 2px #ffd54f;} 50% {text-shadow: 0 0 6px #ffd54f, 0 0 16px #ffb300, 0 0 26px #ff8f00;} 100% {text-shadow: 0 0 2px #ffd54f;} }
-    @keyframes pulse-do { 0% {text-shadow: 0 0 2px #e0a96d;} 50% {text-shadow: 0 0 5px #e0a96d, 0 0 14px #b07d62, 0 0 20px #7f4f24;} 100% {text-shadow: 0 0 2px #e0a96d;} }
-    @keyframes pulse-nichi { 0% {text-shadow: 0 0 2px #ff9800;} 50% {text-shadow: 0 0 6px #ff9800, 0 0 16px #f57c00, 0 0 28px #e65100;} 100% {text-shadow: 0 0 2px #ff9800;} }
+    /* 💡 日本曜日基礎樣式 */
+    #custom-jp-day {
+        font-weight: bold;
+        margin-right: 4px;
+        padding: 0 8px; /* 收斂一點 padding 讓它與時鐘靠得更緊湊 */
+        transition: all 0.5s ease;
+    }
 
-    #custom-jp-day { font-weight: bold; margin-right: 4px; padding: 0 10px; transition: all 0.5s ease; }
-    #custom-jp-day.youbi-getsu { color: #e0f7fa; animation: pulse-getsu 4s ease-in-out infinite; }
-    #custom-jp-day.youbi-ka    { color: #ff3838; animation: pulse-ka 3.5s ease-in-out infinite; }
-    #custom-jp-day.youbi-sui   { color: #2de2e6; animation: pulse-sui 4.5s ease-in-out infinite; }
-    #custom-jp-day.youbi-moku  { color: #39ff14; animation: pulse-moku 4s ease-in-out infinite; }
-    #custom-jp-day.youbi-kin   { color: #fff176; animation: pulse-kin 3.8s ease-in-out infinite; }
-    #custom-jp-day.youbi-do    { color: #d4a373; animation: pulse-do 5s ease-in-out infinite; }
-    #custom-jp-day.youbi-nichi { color: #ffa726; animation: pulse-nichi 3s ease-in-out infinite; }
+    /* 💡 將動畫週期拉長至 16~20 秒！極其緩慢的能量潮汐 */
+    #custom-jp-day.youbi-getsu { color: #e0f7fa; animation: pulse-getsu 18s ease-in-out infinite; }
+    #custom-jp-day.youbi-ka    { color: #ff3838; animation: pulse-ka 17s ease-in-out infinite; }
+    #custom-jp-day.youbi-sui   { color: #2de2e6; animation: pulse-sui 19s ease-in-out infinite; }
+    #custom-jp-day.youbi-moku  { color: #39ff14; animation: pulse-moku 18s ease-in-out infinite; }
+    #custom-jp-day.youbi-kin   { color: #fff176; animation: pulse-kin 16s ease-in-out infinite; }
+    #custom-jp-day.youbi-do    { color: #d4a373; animation: pulse-do 20s ease-in-out infinite; }
+    #custom-jp-day.youbi-nichi { color: #ffa726; animation: pulse-nichi 15s ease-in-out infinite; }
 
-    #clock { color: #e0af68; font-weight: bold; margin-left: 2px; animation: pulse-clock 4s ease-in-out infinite; }
-    #network { color: #9ece6a; }
-    #cpu { color: #7dcfff; }
-    #memory { color: #bb9af7; }
-    #pulseaudio { color: #7aa2f7; }
+    /* 💡 時鐘回歸純淨：無光暈、無動畫、絕對靜止 */
+    #clock {
+        color: #e0af68; 
+        font-weight: bold;
+        margin-left: 2px;
+        text-shadow: none; /* 徹底關閉光暈 */
+        animation: none;   /* 徹底關閉動畫 */
+    }
   '';
 }
