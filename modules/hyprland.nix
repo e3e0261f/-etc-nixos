@@ -27,7 +27,7 @@
     require("window_rules")
     require("bindings")
     require("MONITORS")
-    --require("AUTOSTART")
+    require("AUTOSTART")
     require("ENVIRONMENT")
     require("LOOKANDFEEL")
     require("MISC")
