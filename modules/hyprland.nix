@@ -140,7 +140,7 @@
 
   # 5. 視窗規則模組
   xdg.configFile."MYHYprLUa/AUTOSTART.lua".text = ''
-    hl.on("hyprland.start", function ()
+      hl.on("hyprland.start", function ()
       hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
       hl.exec_cmd("kitty")
       hl.exec_cmd("waybar")
@@ -161,6 +161,10 @@
   # 7. 視窗規則模組
   xdg.configFile."MYHYprLUa/LOOKANDFEEL.lua".text = ''
 
+
+    -- 💡 為 Waybar 啟用硬體加速的雙重毛玻璃透光
+    hl.layer_rule({ name = "waybar-blur", match = { namespace = "waybar" }, blur = true })
+    hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.2 })
     -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
     hl.config({
         general = {
