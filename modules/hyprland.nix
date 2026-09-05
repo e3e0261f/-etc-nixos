@@ -66,6 +66,13 @@
 
     local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
+    -- 💡 1. 區域錄影：Super + Shift + R
+    hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("record-screen area"))
+
+    -- 💡 2. 全螢幕錄影 (免拉框)：Super + Ctrl + Shift + R
+    hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("record-screen fullscreen"))
+
+
     -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
     hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
     local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
