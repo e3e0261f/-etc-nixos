@@ -23,6 +23,7 @@
           echo "✅ 測試成功！目前效果已臨時生效。"
           
           # 💡 核心平滑邏輯：殺死所有重複的 Waybar，並重啟單一實例
+          systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
           echo "🔄 正在平滑重載 Waybar 狀態欄..."
           pkill -9 waybar 2>/dev/null
           sleep 0.5
@@ -56,6 +57,7 @@
         echo "✅ 構建並生成新世代成功！"
         
         # 💡 核心平滑邏輯：殺死所有重複的 Waybar，並重啟單一實例
+        systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
         echo "🔄 正在平滑重載 Waybar 狀態欄..."
         pkill -9 waybar 2>/dev/null
         sleep 0.5
@@ -103,6 +105,7 @@
 
       echo "🚀 同步完成！準備執行系統構建..."
       if sudo nixos-rebuild switch --flake .#nixos; then
+          systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
           pkill -9 waybar 2>/dev/null
           systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
           echo "✨ 系統已成功恢復為遠端最新版本。"
