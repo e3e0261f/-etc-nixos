@@ -402,6 +402,51 @@ in
     #libfido2 fido2-tools      # libfido2 提供 CTAP 支撑库，fido2-tools 提供一些命令行工具用于测试 FIDO2 操作（例如模拟令牌命令、查验）。适合测试和调试
     jq
     
+    #取证工具集
+    lynis # Linux/Unix 系統安全性加固與合規性審計工具
+    # sleuthkit # (autopsy) -磁碟映像與檔案系統底層鑑識分析工具集 #BIG
+    ltrace # 追蹤程式調用的動態連結庫函數 (Library Calls)
+    strace # 追蹤程式運行時的系統調用 (System Calls)
+    checksec # 檢查二進制檔案編譯安全防護（ASLR, DEP/NX, Canary, PIE）, 看目标二进制开了什么保护，只需要一行命令。
+    # binwalk #BIG# 韌體映像檔分析與隱藏檔案提取工具
+    gdb # GNU 專用程式調試器（搭配 pwndbg 或 gef 插件）,(配合 pwndbg)：动态调试必须掌握的利器。
+    # ghidra #BIG# NSA 開源的軟體逆向分析與反編譯套件,免费且功能极其强大的反编译器，看 C 伪代码利器。 
+    radare2 # (r2) 開源跨平台逆向工程與二進制分析框架
+    cewl # 透過爬取目標網頁生成客製化字典的工具
+    crunch # 自定義字符集的字典生成工具
+    hydra # 支援數十種網路協議的線上暴力破解工具
+    medusa # 快速、模組化的多執行緒網路登入審計工具
+    # hashcat # 基於 GPU 加速的超高速雜湊破解器
+    # john # (John the Ripper) - 多演算法密碼強度審計與離線雜湊破解工具
+    httpx # 高並發 HTTP 探測與狀態校驗工具
+    whatweb # 網站技術棧與 CMS 指紋識別工具
+    wpscan # WordPress 內容管理系統專用安全審計工具
+    ffuf # 基於 Go 語言的超快速 Web Fuzzing 工具
+    # gobuster # 高速目錄、DNS 與虛擬主機枚舉工具
+    nikto # Web 伺服器已知弱點與配置缺陷掃描器
+    sqlmap # 自動化 SQL 注入檢測與利用工具
+    suricata # 開源高效能網路入侵偵測與預防系統 (IDS/IPS)
+    # zeek # (原 Bro) - 企業級網路流量安全監控與分析引擎 #BIG
+    mitmproxy # 支援 HTTP/HTTPS 攔截與腳本修改的互動式代理
+    ngrep # 支援正規表達式的網路封包匹配工具
+    dsniff # 網路密鑰與明文協定審計工具集
+    bettercap # 現代化多模組網路探測與中間人測試框架
+    # ettercap # 局域網協議分析與中間人環境調試工具
+    # wireshark # 圖形化網路封包與協議分析器 #BIG
+    # wireshark-cli
+    tcpdump # 命令列網路抓包與封包過濾工具
+    traceroute # / mtr - 路由路徑追蹤與網路延遲分析
+    arping # 基於 ARP 協定的局域網主機探測
+    hping # 客製化 TCP/IP 封包構造與防火牆測試工具
+    fping # 高並發 ICMP 存活主機檢測
+    socat # 雙向資料流多功能中繼轉發工具
+    netcat # (nc) - 網路讀寫與端口監聽調試工具
+    zmap # 全網範圍快速掃描工具
+    masscan # 超高速非同步端口掃描器
+    nmap # 網路端口掃描與服務指紋識別
+    # burpsuite #BIG# Web 领域最常用的 Burp Suite
+    
+         
     # 網路與代理
     aria2 axel bind
     dae daed smartdns
