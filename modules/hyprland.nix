@@ -86,7 +86,23 @@
     local menu        = "fuzzel"
     local mainMod     = "SUPER"
     
-    hl.bind("TAB + ALT", hl.dsp.exec_cmd("wall-random"))
+    -- =======================================================
+    -- ⭐️ 官方原生：Alt + Tab 切換視窗並置頂層級 (誰在前誰在後)
+    -- =======================================================
+
+    -- 1. Alt + Tab：順向切換視窗，並將該視窗翻到最頂層
+    hl.bind("ALT + Tab", function()
+      hl.dispatch(hl.dsp.window.cycle_next())
+      hl.dispatch(hl.dsp.window.bring_to_top())
+    end)
+
+    -- 2. Alt + Shift + Tab：反向切換視窗，並將該視窗翻到最頂層
+    hl.bind("ALT + SHIFT + Tab", function()
+      hl.dispatch(hl.dsp.window.cycle_next({ next = false }))
+      hl.dispatch(hl.dsp.window.bring_to_top())
+    end)
+
+    
 
     -- ⭐️ 2. Ctrl + Super + W：隨機抽取一張 2K 高畫質桌布（8大轉場特效全隨機！）
     hl.bind(mainMod .. " + CTRL + R", hl.dsp.exec_cmd("wall-random"))
