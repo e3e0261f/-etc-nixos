@@ -1,0 +1,26 @@
+<!DOCTYPE patchbay>
+<patchbay name="qpwgraph" version="1.0.4">
+ <items>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium" port="Chromium:output_FL"/>
+   <input node="內部音效 類比立體聲" port="ALC1150 Analog:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Source" port="Easy Effects Source:capture_FL"/>
+   <input node="Steinberg CI1 數位立體聲 (IEC958)" port="Steinberg CI1:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Source" port="Easy Effects Source:capture_FR"/>
+   <input node="Steinberg CI1 數位立體聲 (IEC958)" port="Steinberg CI1:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="输出电平表-1" port="output_level:output_FL"/>
+   <input node="Steinberg CI1 數位立體聲 (IEC958)" port="Steinberg CI1:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="输出电平表-1" port="output_level:output_FR"/>
+   <input node="Steinberg CI1 數位立體聲 (IEC958)" port="Steinberg CI1:playback_FR"/>
+  </item>
+ </items>
+</patchbay>
+

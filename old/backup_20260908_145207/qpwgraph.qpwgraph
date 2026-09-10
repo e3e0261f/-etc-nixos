@@ -1,0 +1,10 @@
+<!DOCTYPE patchbay>
+<patchbay name="qpwgraph" version="1.0.4">
+ <items>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Chromium" port="Chromium:output_FL"/>
+   <input node="內部音效 類比立體聲" port="ALC1150 Analog:playback_FL"/>
+  </item>
+ </items>
+</patchbay>
+
