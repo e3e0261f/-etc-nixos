@@ -253,18 +253,18 @@ in
       "clock": {
         "format": "{:%H:%M}",
         "format-alt": " {:%Y/%m/%d}",
-        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "tooltip-format": "<span size='12pt' font='JetBrainsMono Nerd Font'>{calendar}</span>",
+        "locale": "en_US.UTF-8",          /* ⭐️ 核心：讓日曆以標準英文 3 寬度精確對齊！ */
         "calendar": {
             "mode": "month",
             "mode-mon-col": 3,
-            "weeks-pos": "right",
+            "weeks-pos": "",
             "on-scroll": 1,
             "format": {
                 "months": "<span color='#ffead3'><b>{}</b></span>",
-                "days": "<span color='#ecc6d9'><b>{}</b></span>",
-                "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
-                "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
-                "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+                "days": "<span color='#cdd6f4'><b>{}</b></span>",
+                "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+                "today": "<span color='#ff5555' background='#313244'><b><u>{}</u></b></span>"
             }
         },
         "actions": {
@@ -400,6 +400,31 @@ in
         0%   { text-shadow: 0 0 4px #ff5252; }
         50%  { text-shadow: 0 0 10px #ff1744, 0 0 18px rgba(255, 23, 68, 0.6); }
         100% { text-shadow: 0 0 4px #ff5252; }
+    }
+    /* =======================================================
+       ⭐️ 日曆 Tooltip 彈窗：精準對齊與深邃毛玻璃
+       ======================================================= */
+    tooltip {
+        background: rgba(16, 18, 28, 0.92);    /* 深邃半透明背景 */
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
+        padding: 10px 14px;
+    }
+
+    tooltip {
+        background: rgba(16, 18, 28, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        padding: 12px 16px;
+    }
+
+    tooltip label {
+        font-family: "JetBrainsMono Nerd Font", "Noto Sans Mono CJK TC", monospace;
+        font-size: 13px;
+        color: #cdd6f4;
+        /* ⭐️ 核心補償：將中文字元間距微調拉寬，把星期標題拉伸對齊數字 */
+        letter-spacing: 2.5px;
     }
   '';
 }

@@ -38,6 +38,7 @@
   xdg.configFile."MYHYprLUa/window_rules.lua".text = ''
     hl.window_rule({ name = "float_fcitx", match = { class = "org.fcitx." }, float = true })
     hl.window_rule({ name = "vlc", match = { class = "vlc" }, float = true })
+    hl.window_rule({ name = "vscodium", match = { class = "vscodium" }, float = true})
     hl.window_rule({ name = "spotify", match = { class = "spotify" }, float = true })
     hl.window_rule({ name = "nemo", match = { class = "nemo" }, float = true })
     hl.window_rule({ name = "steam", match = { class = "steam" }, float = true })
@@ -84,6 +85,8 @@
     local fileManager = "nemo"
     local menu        = "fuzzel"
     local mainMod     = "SUPER"
+    
+    hl.bind("TAB + ALT", hl.dsp.exec_cmd("wall-random"))
 
     -- ⭐️ 2. Ctrl + Super + W：隨機抽取一張 2K 高畫質桌布（8大轉場特效全隨機！）
     hl.bind(mainMod .. " + CTRL + R", hl.dsp.exec_cmd("wall-random"))
@@ -198,6 +201,12 @@
     hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.2 })
 
     hl.config({
+        cursor = {
+        no_hardware_cursors = false,    -- ⭐️ 強制開啟顯卡硬體游標
+        use_cpu_buffer = false,         -- ⭐️ 嚴禁使用 CPU 記憶體畫滑鼠！由 GPU 顯存直接輸出
+        no_break_fs_vrr = true,
+        min_refresh_rate = 60,          -- 最低鎖定 60 幀
+        },
         general = {
             gaps_in  = 5,
             gaps_out = 16,
