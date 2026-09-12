@@ -104,7 +104,7 @@ in
           domain(suffix: albiononline.com) -> direct(must)
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
-          pname(nix-daemon, git, git-remote-http, aria2c) -> direct(must)
+          pname(nix-daemon, git, git-remote-http, aria2c, steam) -> direct(must)
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
@@ -117,12 +117,12 @@ in
 
           # ⭐️【第 2 級】：國內服務直連
           domain(geosite:apple@cn) -> direct
-          domain(geosite:steam@cn) -> direct          
+          domain(geosite:steam@cn) -> direct(must)
           domain(geosite:category-games@cn) -> direct  
-          domain(geosite:cn) -> direct
-          dip(geoip:cn) -> direct
+          domain(geosite:cn) -> direct(must)
+          dip(geoip:cn) -> direct(must)
           domain(geosite:tencent) -> direct
-          domain(geosite:china-list) -> direct
+          domain(geosite:china-list) -> direct(must)
           domain(suffix: miwifi.com) -> direct(must)
           domain(suffix: xiaomi.com) -> direct(must)
           domain(suffix: mi.com) -> direct(must)

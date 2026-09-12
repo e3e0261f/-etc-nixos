@@ -172,12 +172,17 @@ let
         main()
   '';
 
-  # 2. 日本曜日腳本 (強制英文星期)
+# 2. 日本曜日腳本 (⭐️ 強制鎖定台灣時區 Asia/Taipei，午夜 00:00 準時換日！)
   jpDayScript = pkgs.writeShellScriptBin "jp-day" ''
-    #!/bin/bash
-    W=$(date +%V)
-    D=$(date +%u)
-    E=$(LC_TIME=C date +%A)
+    #!/usr/bin/env bash
+    
+    # ⭐️ 核心修復：強制整個腳本的時區鎖定在台灣 (UTC+8)
+    export TZ="Asia/Taipei"
+
+    W=$(${pkgs.coreutils}/bin/date +%V)
+    D=$(${pkgs.coreutils}/bin/date +%u)
+    E=$(LC_TIME=C ${pkgs.coreutils}/bin/date +%A)
+
     case $D in
       1) J="月曜"; C="youbi-getsu";;
       2) J="火曜"; C="youbi-ka";;
