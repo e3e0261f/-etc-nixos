@@ -56,15 +56,15 @@
   };
 
   # ⭐️ 允許 wheel 組用戶免輸入密碼直接掛載內接硬碟與 USB
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if ((action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
-           action.id == "org.freedesktop.udisks2.filesystem-mount") &&
-          subject.isInGroup("wheel")) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
+  # security.polkit.extraConfig = ''
+  #   polkit.addRule(function(action, subject) {
+  #     if ((action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
+  #          action.id == "org.freedesktop.udisks2.filesystem-mount") &&
+  #         subject.isInGroup("wheel")) {
+  #       return polkit.Result.YES;
+  #     }
+  #   });
+  # '';
 
   nix.settings = {
     # 同時下載的任務數 (根據你的 CPU 核心數設定，建議 4-8) 1
