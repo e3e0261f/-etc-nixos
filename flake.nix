@@ -10,6 +10,22 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+      # 添加 quickshell 官方 flake
+    quickshell = {
+      # 网址与官网最新规范保持一致
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+  
+      # ⚠️ 这一行非常重要！
+      # 强制让 QuickShell 使用与你系统完全相同的 nixpkgs，防止 Qt 库版本冲突闪退
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+      # 1. 引入 Caelestia Shell
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs"; # 保证与系统 Qt 库版本一致
+    };
+
     # 如果以後有真正的 cool-config 再打開這裡
     # cool-config.url = "github:super-hacker/cool-hyprland"; 
   };
@@ -28,6 +44,8 @@
           home-manager.backupFileExtension = "backup"; 
           # 💡 確保這裡是 rhys
           home-manager.users.rhys = import ./modules/home.nix;
+          # ⭐️ 必须在同一个大括号内传给 home-manager：
+          home-manager.extraSpecialArgs = { inherit inputs; };
         }
       ];
     };

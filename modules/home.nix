@@ -1,11 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   # 🎯 這裡成了唯一的「插線板 / 總路由」
   imports = [
     # ./fcitx-ibus.nix
     ./hyprland.nix
-    ./waybar.nix
+    # ./waybar.nix
     ./openmega.nix
     ./kitty.nix
     ./shell.nix
@@ -30,12 +30,49 @@
     GTK_FONT_NAME = "Noto Sans CJK TC 16";
   };
 
+  # 在 home-manager (home.nix) 中：
+  systemd.user.services.quickshell = {
+    Unit = {
+      Description = "QuickShell Desktop Shell";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      # 如果通过 flake 安装，填写 inputs.quickshell 或 pkgs.quickshell 的路径；也可以直接写 "qs"
+      ExecStart = "${pkgs.quickshell}/bin/qs";
+      Restart = "on-failure";       # 崩溃时自动重启
+      RestartSec = "1s";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
   # 💡 確保 Waybar 由 Systemd 管理，並掛載在 Hyprland 會話上
-  programs.waybar = {
-    enable = true;
-    systemd = {
-      enable = true;
-      targets = [ "hyprland-session.target" ];
+  # programs.waybar = {
+  #   enable = true;
+  #   systemd = {
+  #     enable = true;
+  #     targets = [ "hyprland-session.target" ];
+  #   };
+  # };
+  #
+  systemd.user.services.caelestia-shell = {
+    Unit = {
+      Description = "Caelestia Desktop Shell Daemon";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      # 填入可执行文件名称
+      ExecStart = "${inputs.caelestia-shell.packages.${pkgs.system}.default}/bin/caelestia-shell";
+      Restart = "on-failure";
+      RestartSec = "1s";
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 

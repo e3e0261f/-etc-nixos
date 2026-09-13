@@ -14,10 +14,10 @@
               
               # 平滑重啟 Waybar
               systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
-              echo "🔄 正在平滑重載 Waybar 狀態欄..."
-              pkill -9 waybar 2>/dev/null
-              sleep 0.5
-              systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
+              # echo "🔄 正在平滑重載 Waybar 狀態欄..."
+              # pkill -9 waybar 2>/dev/null
+              # sleep 0.5
+              # systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
               exit 0
           else
               echo "❌ 熱回滾失敗！建議直接重開機 (sudo reboot)。"
@@ -44,10 +44,10 @@
           
           # 核心平滑邏輯：重啟單一 Waybar 實例
           systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
-          echo "🔄 正在平滑重載 Waybar 狀態欄..."
-          pkill -9 waybar 2>/dev/null
-          sleep 0.5
-          systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
+          # echo "🔄 正在平滑重載 Waybar 狀態欄..."
+          # pkill -9 waybar 2>/dev/null
+          # sleep 0.5
+          # systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
       else
           echo "❌ 測試失敗，請檢查報錯。"
           exit 1
@@ -90,10 +90,10 @@
 
           # 平滑重啟 Waybar
           systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
-          echo "🔄 正在平滑重載 Waybar 狀態欄..."
-          pkill -9 waybar 2>/dev/null
-          sleep 0.5
-          systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
+          # echo "🔄 正在平滑重載 Waybar 狀態欄..."
+          # pkill -9 waybar 2>/dev/null
+          # sleep 0.5
+          # systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
           exit 0
       fi
 
@@ -118,10 +118,10 @@
         echo "✅ 構建並生成新世代成功！"
         
         systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
-        echo "🔄 正在平滑重載 Waybar 狀態欄..."
-        pkill -9 waybar 2>/dev/null
-        sleep 0.5
-        systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
+        # echo "🔄 正在平滑重載 Waybar 狀態欄..."
+        # pkill -9 waybar 2>/dev/null
+        # sleep 0.5
+        # systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
 
         read -p "🚀 是否同步至 GitHub? [Y/n] " confirm
         confirm=''${confirm:-Y}
@@ -166,8 +166,8 @@
       echo "🚀 同步完成！準備執行系統構建..."
       if sudo nixos-rebuild switch --flake .#nixos; then
           systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP 2>/dev/null
-          pkill -9 waybar 2>/dev/null
-          systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
+          # pkill -9 waybar 2>/dev/null
+          # systemctl --user restart waybar.service 2>/dev/null || hyprctl dispatch exec waybar
           echo "✨ 系統已成功恢復為遠端最新版本。"
       else
           echo "❌ 構建失敗，備份保存在 $BACKUP_DIR。"

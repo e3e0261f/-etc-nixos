@@ -38,6 +38,8 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true; # 开机自动激活蓝牙
   services.blueman.enable = true;          # 提供蓝牙图表管理工具
+  services.upower.enable = true;
+  services.power-profiles-daemon.enable = true;
 
   # ⭐️ 為 Chromium 啟用 Widevine DRM 模組（支援 Spotify、Netflix 網頁播放）
   nixpkgs.config.chromium.enableWideVine = true;
@@ -314,7 +316,7 @@
   };
 
 
-  programs.waybar.enable = true;
+  # programs.waybar.enable = true;
   services.hypridle.enable = true;
   programs.hyprlock.enable = true;
 
@@ -347,7 +349,7 @@
   users.users."rhys" = {
     isNormalUser = true;
     description = "Rhys";
-    extraGroups = [ "networkmanager" "wheel" "storage" "video" "render" ];
+    extraGroups = [ "networkmanager" "wheel" "storage" "video" "render" "audio" ];
     shell = pkgs.fish;
   };
 
@@ -371,6 +373,15 @@
     fuzzel waybar mako
     hyprlauncher hyprshutdown
     hypridle hyprlock hyprpaper hyprpicker
+    inputs.quickshell.packages.${pkgs.system}.default
+        # 引入 Caelestia Shell 二进制
+    inputs.caelestia-shell.packages.${pkgs.system}.default
+
+    # Caelestia Shell 所需的基础小部件依赖
+    brightnessctl    # 亮度控制滑块
+    playerctl        # 媒体播放控制与歌词
+    wireplumber      # Pipewire 音频控制
+    networkmanager   # Wi-Fi 控制面板
     
     # 3. 基礎圖形支撐
     wl-clipboard grim slurp translate-shell

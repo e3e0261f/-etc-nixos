@@ -118,7 +118,7 @@
 
     -- 基礎操作
     hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-    hl.bind(mainMod .. " + C", hl.dsp.window.close())
+    hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
     hl.bind(mainMod .. " + SHIFT + DELETE", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
     hl.bind(mainMod .. " + SHIFT + CTRL + ALT + DELETE", hl.dsp.exec_cmd("hyprctl reload"))
     
@@ -130,7 +130,7 @@
 
     hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
     hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.pin({ action = "toggle" }))
-    hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"))
+    --hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"))
     hl.bind(mainMod .. " + SHIFT + CTRL + S", hl.dsp.exec_cmd("trans-gui"))
 
     -- 方向導航
@@ -216,8 +216,8 @@
   # =======================================================
   xdg.configFile."MYHYprLUa/LOOKANDFEEL.lua".text = ''
     -- 為 Waybar 啟用硬體加速雙重毛玻璃
-    hl.layer_rule({ name = "waybar-blur", match = { namespace = "waybar" }, blur = true })
-    hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.2 })
+    --hl.layer_rule({ name = "waybar-blur", match = { namespace = "waybar" }, blur = true })
+    -- hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.2 })
 
     hl.config({
         cursor = {
