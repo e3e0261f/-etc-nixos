@@ -39,6 +39,15 @@
   #   };
   # };
   #
+    # 1. 在软件包列表中：使用 with-cli，并把命令行工具也加进终端
+  home.packages = with pkgs; [
+    inputs.caelestia-shell.packages.${pkgs.system}.with-cli # ⭐️ 改为 with-cli
+    inputs.caelestia-cli.packages.${pkgs.system}.default    # ⭐️ 终端直接可用的 caelestia 命令
+    inputs.quickshell.packages.${pkgs.system}.default
+    # ... 你原来的其他包
+  ];
+
+  # 2. 在 Systemd 守护进程中：同样指向 with-cli
   systemd.user.services.caelestia-shell = {
     Unit = {
       Description = "Caelestia Desktop Shell Daemon";
@@ -47,10 +56,9 @@
     };
 
     Service = {
-      # ⭐️ 把这一行加进去（之前就是漏了它）：
       Environment = [ "QS_ICON_THEME=Papirus-Dark" ];
-
-      ExecStart = "${inputs.caelestia-shell.packages.${pkgs.system}.default}/bin/caelestia-shell";
+      # ⭐️ 同样换成 with-cli
+      ExecStart = "${inputs.caelestia-shell.packages.${pkgs.system}.with-cli}/bin/caelestia-shell";
       Restart = "on-failure";
       RestartSec = "1s";
     };

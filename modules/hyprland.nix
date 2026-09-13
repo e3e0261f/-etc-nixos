@@ -83,7 +83,7 @@
     local terminal    = "kitty"
     -- ⭐️ 改為呼叫專屬 class，按 Super+E 時精準觸發 75% 置中懸浮 Yazi！
     local fileManager = "nemo"
-    local menu        = "fuzzel"
+    local menu        = "caelestia shell drawers toggle launcher"
     local mainMod     = "SUPER"
     
     -- =======================================================
@@ -131,6 +131,7 @@
     hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
     hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.pin({ action = "toggle" }))
     --hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("pkill -SIGUSR1 .waybar-wrapped || pkill -SIGUSR1 waybar"))
+    hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("caelestia shell drawers toggle dashboard"))
     hl.bind(mainMod .. " + SHIFT + CTRL + S", hl.dsp.exec_cmd("trans-gui"))
 
     -- 方向導航
@@ -194,7 +195,7 @@
     hl.on("hyprland.start", function ()
       hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
       hl.exec_cmd("fcitx5 -d")
-      hl.exec_cmd("nm-applet --indicator")
+      --hl.exec_cmd("nm-applet --indicator")
       hl.exec_cmd("google-chrome")
       hl.exec_cmd("qpwgraph")
       hl.exec_cmd("easyeffects --gapplication-service")
