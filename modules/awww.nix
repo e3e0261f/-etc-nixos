@@ -11,7 +11,7 @@ let
     pkill -9 -f "mpvpaper" 2>/dev/null || true
     rm -f /tmp/mpvpaper.sock
 
-    SAVE_DIR="$HOME/Pictures/Wallhaven"
+    SAVE_DIR="$HOME/Pictures/Wallpapers"
     TMP_IMG="/tmp/wallhaven_downloading.jpg"
     mkdir -p "$SAVE_DIR"
 
