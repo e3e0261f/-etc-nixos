@@ -13,7 +13,7 @@
     ./helix.nix
     ./git.nix
     ./fcitx5.nix
-    ./mako.nix
+    # ./mako.nix
     ./fuzzel.nix
     ./scripts.nix
     ./copyfile.nix

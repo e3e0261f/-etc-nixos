@@ -22,7 +22,7 @@
   ];
 
 
-  system.nixos.tags = [ "UPDATE-NOT-PROXY" ];
+  system.nixos.tags = [ "QUICKSHELL" ];
 
 	boot.kernelPackages = pkgs.linuxPackages_zen;
 	# boot.initrd.kernelModules = [ "amdgpu" ];
@@ -246,6 +246,7 @@
     GDK_BACKEND = "wayland,x11,*";
     ANKI_WAYLAND = "1";
     DIRENV_LOG_FORMAT = ""; # 干净终端
+    QS_ICON_THEME = "Papirus-Dark";
     # ⭐️ 强力将 Chromium 变黑：启用原生深色主题，并强制将所有普通网页转换为黑暗模式
     CHROMIUM_FLAGS = [
       "--enable-features=WebUIDarkMode,Vulkan,DefaultANGLEVulkan"
