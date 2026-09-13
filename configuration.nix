@@ -376,8 +376,10 @@
     hyprlauncher hyprshutdown
     hypridle hyprlock hyprpaper hyprpicker
     inputs.quickshell.packages.${pkgs.system}.default
-        # 引入 Caelestia Shell 二进制
+    # 引入 Caelestia Shell 二进制
     inputs.caelestia-shell.packages.${pkgs.system}.default
+    # ⭐️ 引入 caelestia-cli
+    inputs.caelestia-cli.packages.${pkgs.system}.default
     pamixer ddcutil brightnessctl libcava lm_sensors aubio
     libqalculate power-profiles-daemon
     material-symbols rubik cascadia-code
