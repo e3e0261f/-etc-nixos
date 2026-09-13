@@ -77,7 +77,8 @@ in
       group {
           # 1. 大流量省錢池：排除 4倍、6倍、公告、香港
           cheap {
-              policy: min_moving_avg
+              # policy: min_moving_avg
+              policy: random
               filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK')
           }
 
@@ -89,7 +90,8 @@ in
 
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
-              policy: min_moving_avg
+              # policy: min_moving_avg
+              policy: random
               filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK')
           }
       }

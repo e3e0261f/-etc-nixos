@@ -109,6 +109,9 @@
     -- ⭐️ 2. Ctrl + Super + W：隨機抽取一張 2K 高畫質桌布（8大轉場特效全隨機！）
     hl.bind(mainMod .. " + CTRL + W", hl.dsp.exec_cmd("wall-video"))
 
+    -- 綁定 Ctrl + Shift + Super + A 執行繁簡轉換並複製檔案
+    hl.bind(mainMod .. " + SHIFT + CTRL + A", hl.dsp.exec_cmd("fish -c scc"))
+
     -- 錄影快捷鍵
     hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("record-screen area"))
     hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("record-screen fullscreen"))
