@@ -296,6 +296,7 @@
       fcitx5-rime                      # 👈 核心：Rime 引擎
       qt6Packages.fcitx5-chinese-addons
       fcitx5-nord                      # 👈 Nord 深色皮膚
+      kdePackages.fcitx5-qt # ⭐️ 解决 Qt6 下 Fcitx 托盘通讯的关键
     ];
   };
 
@@ -376,7 +377,17 @@
     inputs.quickshell.packages.${pkgs.system}.default
         # 引入 Caelestia Shell 二进制
     inputs.caelestia-shell.packages.${pkgs.system}.default
-
+    pamixer ddcutil brightnessctl libcava lm_sensors aubio
+    libqalculate power-profiles-daemon
+    material-symbols rubik cascadia-code
+    qt6.qtbase
+    qt6.qtimageformats
+    qt6.qtdeclarative
+    qt6.qtimageformats
+    qt6.qtshadertools
+    swappy bash fish ninja glibc libgcc
+    # Caelestia 官方图标库
+    papirus-icon-theme
     # Caelestia Shell 所需的基础小部件依赖
     brightnessctl    # 亮度控制滑块
     playerctl        # 媒体播放控制与歌词

@@ -11,6 +11,8 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+    wireplumber.enable = true;
+
 
     # =======================================================
     # ⭐️ 預設 192 kHz 母帶升頻 + 動態向下相容

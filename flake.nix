@@ -4,6 +4,11 @@
     my-rules.url = "github:e3e0261f/GEoIP-GEoSITE";
     my-rules.flake = false;
 
+    caelestia-cli = {
+      url = "github:caelestia-dots/cli";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # 1. 引入 Home Manager
     home-manager = {
       url = "github:nix-community/home-manager";

@@ -30,7 +30,7 @@ in
 
   home.sessionVariables = {
     XMODIFIERS = "@im=fcitx";
-    GTK_IM_MODULE = "fcitx";
+    # GTK_IM_MODULE = "fcitx";
     QT_IM_MODULE = "fcitx";
     SDL_IM_MODULE = "fcitx"; # 确保支持 SDL2 的游戏内也能打字
   };

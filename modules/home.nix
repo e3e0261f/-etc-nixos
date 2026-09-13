@@ -25,6 +25,28 @@
     ./rhys.nix
   ];
 
+    # 1. 强制声明 GTK 与 Qt 图标主题统一为 Papirus-Dark
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
+
+  # 2. 补齐 Fcitx5 自带的图标数据包，并加入 XDG 环境变量
+  home.packages = with pkgs; [
+    papirus-icon-theme
+    adwaita-icon-theme
+    hicolor-icon-theme
+    fcitx5-material-color # 为 Fcitx5 提供完整的 Material 图标与配色支持
+  ];
+
+  # 3. 告诉 Qt 应用去哪里搜寻系统图标
+  home.sessionVariables = {
+    XDG_DATA_DIRS = "$XDG_DATA_DIRS:${pkgs.papirus-icon-theme}/share:${pkgs.adwaita-icon-theme}/share";
+  };
+
   home.sessionVariables = {
     # 這是所有 GTK 程式 (包含你彈出的通知、輸入法設定) 的字體大小總開關
     GTK_FONT_NAME = "Noto Sans CJK TC 16";
