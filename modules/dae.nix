@@ -43,7 +43,7 @@ in
       global {
           allow_insecure: false
           so_mark_from_dae: 0
-          lan_interface: wlp8s0 
+          lan_interface: auto
           wan_interface: auto
           log_level: info
           auto_config_kernel_parameter: true
@@ -52,7 +52,7 @@ in
       }
 
       subscription {
-          my_sub: 'https://links.rockey-repo.org/s/nXOEvhE6wHJWwSqc'
+          my_sub: 'https://links.rockey-repo.org/s/CEYCDf96zE5dU6gY'
       }
 
       # =======================================================
@@ -128,6 +128,9 @@ in
           domain(suffix: miwifi.com) -> direct(must)
           domain(suffix: xiaomi.com) -> direct(must)
           domain(suffix: mi.com) -> direct(must)
+          domain(suffix: z.luxury) -> direct(must)
+          domain(suffix: rockey-repo.org) -> direct(must)
+          
 
           # ⭐️【第 3 級】：Google AI 與相關服務（修正語法，拿掉錯誤的 must）
           domain(geosite:openai) -> google_ai

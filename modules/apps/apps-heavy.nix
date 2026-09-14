@@ -16,6 +16,7 @@
     thunar
     thunar-volman
     thunar-archive-plugin
+    tsx
 
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
