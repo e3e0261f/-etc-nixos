@@ -15,5 +15,6 @@
     tesseract
     waypaper
     loupe
+    spotify
   ];
 }
