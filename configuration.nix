@@ -394,7 +394,7 @@
     vim neovim git wget curl unzip
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
-    dust pciutils
+    dust pciutils scanmem
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
     fuzzel waybar mako
