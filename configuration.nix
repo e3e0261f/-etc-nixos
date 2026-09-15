@@ -94,8 +94,30 @@
     # ⚡ 阻止 PCIe 链路进入主动电源管理 (ASPM) 省电状态，彻底根治 PCIe WiFi 延迟抖动与断流
   boot.kernelParams = [ 
     "pcie_aspm=off"
-    "vt.global_cursor_default=0" 
+    "vt.global_cursor_default=0"
+    "pcie_ports=compat"           # 强制兼容旧版 PCIe 唤醒重置
+    "mt7925e.disable_aspm=1"      # 专门针对 MT7925 驱动禁用省电机制
   ];
+  # 1. 彻底禁用不用的博通网卡驱动（黑名单），防止干扰 PCIe 总线唤醒
+  boot.blacklistedKernelModules = [ "bcma" "b43" ];
+  # 3. 睡眠唤醒无痛解耦（仅针对 MT7925 优化）
+  powerManagement = {
+    enable = true;
+    
+    # 睡眠前：在总线断电前，安全卸载 MT7925 驱动
+    powerDownCommands = ''
+      /run/current-system/sw/bin/modprobe -r mt7925e || true
+    '';
+    
+    # 唤醒后：通电稳定后硬加载驱动，并重置网络
+    resumeCommands = ''
+      # 延迟 2 秒，给联发科 Wi-Fi 7 芯片充裕的初始化时间
+      /run/current-system/sw/bin/sleep 2
+      /run/current-system/sw/bin/modprobe mt7925e || true
+      # 强行刷新 NetworkManager 和 DHCP 缓存
+      /run/current-system/sw/bin/systemctl restart NetworkManager
+    '';
+  };
 
 
   # 2. 核心 TCP / 網路堆疊終極調優
