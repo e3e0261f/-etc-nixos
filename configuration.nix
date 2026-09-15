@@ -48,6 +48,9 @@
   # ⭐️ 開啟遊戲全速效能調度守護程序
   programs.gamemode.enable = true;
 
+  # 顯式關閉 GNOME Keyring（如果你完全不想用它）
+  services.gnome.gnome-keyring.enable = false;
+
   # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
   qt = {
     enable = true;
@@ -369,7 +372,7 @@
     vim neovim git wget curl unzip
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
-    dust
+    dust pciutils
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
     fuzzel waybar mako

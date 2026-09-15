@@ -106,7 +106,7 @@ in
           domain(suffix: albiononline.com) -> direct(must)
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
-          pname(nix-daemon, git, git-remote-http, aria2c, steam) -> direct(must)
+          pname(nix-daemon, git, gix, git-remote-http, aria2c, steam) -> direct(must)
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
