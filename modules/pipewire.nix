@@ -44,8 +44,8 @@
       };
       "pulse.properties" = {
         # 與主時鐘 96000 保持基準一致
-        "pulse.min.req" = "512/96000";
-        "pulse.min.quantum" = "512/96000";
+        "pulse.min.req" = "2048/96000";
+        "pulse.min.quantum" = "2048/96000";
         "pulse.max.quantum" = "2048/96000";
       };
     };
