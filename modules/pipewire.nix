@@ -27,8 +27,8 @@
 
         # 3. 穩定緩衝區：鎖死在 1024 ~ 2048（約 10ms ~ 21ms）
         # 徹底禁止緩衝區漂移到 8192 引發顫音！
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 1024;
+        "default.clock.quantum" = 2048;
+        "default.clock.min-quantum" = 2048;
         "default.clock.max-quantum" = 2048;
 
         # 4. 關鍵修復：重採樣品質設為 7 或 4
