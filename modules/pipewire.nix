@@ -13,32 +13,33 @@
     jack.enable = true;
     wireplumber.enable = true;
 
-    extraConfig.pipewire."99-rog-extreme-workload" = {
+    # =======================================================
+    # 🎙️ 錄音棚極限低延遲發燒架構（Studio Extreme 256）
+    # =======================================================
+    extraConfig.pipewire."99-studio-extreme" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        # 解锁 192k 顶级母带池
         "default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
 
-        # ⭐️ 192 kHz 专属防爆缓冲：
-        # 1024 帧在 192k 下刚好是 5.3ms；一旦后台开始编译，自动扩容至 4096 帧（21.3ms 大水库，绝对不爆音！）
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 1024;
-        "default.clock.max-quantum" = 4096;
+        # ⭐️ 錄音棚黃金緩衝區：256 幀（48k 下 5.3ms，物理級無感耳返！）
+        "default.clock.quantum" = 256;
+        "default.clock.min-quantum" = 256;
+        # 上限給予 2048 彈性，保證遇到突發編譯時安全防爆
+        "default.clock.max-quantum" = 2048;
 
-        # 算力拉满的最高品质重采样
+        # 頂級重採樣品質 10（信噪比 > 160dB）
         "resample.quality" = 10;
       };
     };
 
-    extraConfig.pipewire-pulse."99-rog-extreme-pulse" = {
+    extraConfig.pipewire-pulse."99-studio-pulse" = {
       "context.properties" = {
         "resample.quality" = 10;
       };
       "pulse.properties" = {
-        "pulse.min.req" = "1024/48000";
-        "pulse.min.quantum" = "1024/48000";
-        # 允许 Pulse（GTA 5）扩容到 4096 帧防爆
-        "pulse.max.quantum" = "4096/48000";
+        "pulse.min.req" = "256/48000";
+        "pulse.min.quantum" = "256/48000";
+        "pulse.max.quantum" = "2048/48000";
       };
     };
 
