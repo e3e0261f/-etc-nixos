@@ -2,36 +2,39 @@
 
 {
   services.keyd = {
-    enable = true;
-    # 現在改用 keyboards.<名稱> 的結構，我們定義一個叫 default 的配置
-    keyboards = {
-      default = {
-        ids = [ "*" ]; # 套用到所有鍵盤
-        settings = {
-          main = {
-            # 按住 CapsLock 是 nav 層，單點是 Esc
-            capslock = "overload(nav, esc)";
-          };
+  enable = true;
+  keyboards = {
+    default = {
+      ids = [ "*" ];
+      settings = {
+        main = {
+          capslock = "overload(caps_mod, capslock)";
           
-          nav = {
-            # WASD 映射為方向鍵
-            w = "up";
-            a = "left";
-            s = "down";
-            d = "right";
+          # 按一下 Scroll Lock 鍵，在日常模式與遊戲模式之間切換
+          # （也可以改成 pause = "toggle(game)" 或其他平時不用的鍵）
+          # scrolllock = "toggle(game)";
+          "C-A-g" = "toggle(game)";
+          insert = "toggle(game)";
+        };
 
-            # Vim 風格映射 (HJKL)
-            h = "left";
-            j = "down";
-            k = "up";
-            l = "right";
+        caps_mod = {
+          space = "enter";
+          w = "up";
+          a = "left";
+          s = "down";
+          d = "right";
+          h = "left";
+          j = "down";
+          k = "up";
+          l = "right";
+        };
 
-            # 額外小功能
-            q = "C-backspace"; # 刪除前一個單字
-            e = "delete";      # 刪除後一個字元
-          };
+        # 遊戲模式層：把 capslock 還原為原本純粹的鍵，不做任何攔截
+        game = {
+          capslock = "capslock";
         };
       };
     };
   };
+};
 }
