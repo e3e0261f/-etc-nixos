@@ -51,6 +51,10 @@
   # 顯式關閉 GNOME Keyring（如果你完全不想用它）
   services.gnome.gnome-keyring.enable = false;
 
+  boot.extraModprobeConfig = ''
+  options snd_hda_intel power_save=0 power_save_controller=N
+  '';
+
   # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
   qt = {
     enable = true;
@@ -228,6 +232,15 @@
       "ipv6.route-metric" = 100;
     };
   };
+
+  # /etc/nixos/configuration.nix
+  security.pam.loginLimits = [
+    # 允许音频线程使用实时优先级 (95)
+    { domain = "@audio"; item = "rtprio"; type = "-"; value = "95"; }
+    # 允许音频锁死内存，绝不允许交换到 Swap 磁盘产生卡顿
+    { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
+    { domain = "@audio"; item = "nice"; type = "-"; value = "-19"; }
+  ];
 
 
   services.udisks2.enable = true;     # 硬碟自動掛載

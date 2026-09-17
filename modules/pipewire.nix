@@ -2,8 +2,7 @@
 { config, pkgs, ... }:
 
 {
-  # ⚠️ 修正：NixOS 正确的禁用 PulseAudio 语法是 hardware.pulseaudio
-  services.pulseaudio.enable = false; # 如果编译报 warning 可改为 hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 
   services.pipewire = {
@@ -14,54 +13,46 @@
     jack.enable = true;
     wireplumber.enable = true;
 
-    # =======================================================
-    # ⭐️ 96 kHz 高解析母帶 + 真正穩定的 Hi-Fi 策略
-    # =======================================================
-    extraConfig.pipewire."99-audiophile" = {
+    extraConfig.pipewire."99-rog-extreme-workload" = {
       "context.properties" = {
-        # 1. 系統預設時鐘鎖定 96 kHz
-        "default.clock.rate" = 96000;
-
-        # 2. 允許原生切換：遇到底層特定音源允許原生切換，避免非整數倍重採樣
+        "default.clock.rate" = 48000;
+        # 解锁 192k 顶级母带池
         "default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
 
-        # 3. 穩定緩衝區：鎖死在 1024 ~ 2048（約 10ms ~ 21ms）
-        # 徹底禁止緩衝區漂移到 8192 引發顫音！
-        "default.clock.quantum" = 2048;
-        "default.clock.min-quantum" = 2048;
-        "default.clock.max-quantum" = 2048;
+        # ⭐️ 192 kHz 专属防爆缓冲：
+        # 1024 帧在 192k 下刚好是 5.3ms；一旦后台开始编译，自动扩容至 4096 帧（21.3ms 大水库，绝对不爆音！）
+        "default.clock.quantum" = 1024;
+        "default.clock.min-quantum" = 1024;
+        "default.clock.max-quantum" = 4096;
 
-        # 4. 關鍵修復：重採樣品質設為 7 或 4
-        # 品質 7 的失真已低於 -140dB（超越 24-bit 物理極限），且 CPU 零負擔、零群延遲！
-        "resample.quality" = 7;
+        # 算力拉满的最高品质重采样
+        "resample.quality" = 10;
       };
     };
 
-    # PulseAudio 相容層（Chromium、Spotify、遊戲）
-    extraConfig.pipewire-pulse."99-audiophile-pulse" = {
+    extraConfig.pipewire-pulse."99-rog-extreme-pulse" = {
       "context.properties" = {
-        "resample.quality" = 7;
+        "resample.quality" = 10;
       };
       "pulse.properties" = {
-        # 與主時鐘 96000 保持基準一致
-        "pulse.min.req" = "2048/96000";
-        "pulse.min.quantum" = "2048/96000";
-        "pulse.max.quantum" = "2048/96000";
+        "pulse.min.req" = "1024/48000";
+        "pulse.min.quantum" = "1024/48000";
+        # 允许 Pulse（GTA 5）扩容到 4096 帧防爆
+        "pulse.max.quantum" = "4096/48000";
       };
     };
 
-    # 藍牙耳機高解析解鎖 (保持 LDAC / SBC-XQ 高音質)
-    wireplumber.extraConfig."99-bluetooth-hires" = {
-      "wireplumber.settings" = {
-        "bluetooth.autoswitch-to-headset-profile" = false;
-      };
-      "monitor.bluez.properties" = {
-        "bluez5.enable-sbc-xq" = true;
-        "bluez5.enable-msbc" = true;
-        "bluez5.codecs" = [ "ldac" "aptx_hd" "aptx" "aac" "sbc_xq" "sbc" ];
-        "bluez5.default.rate" = 96000;
-        "bluez5.ldac.quality" = "hq";
-      };
+    wireplumber.extraConfig."10-disable-suspension" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [ { "node.name" = "~alsa_output.*"; } ];
+          actions = {
+            update-props = {
+              "session.suspend-timeout-seconds" = 0;
+            };
+          };
+        }
+      ];
     };
   };
 }
