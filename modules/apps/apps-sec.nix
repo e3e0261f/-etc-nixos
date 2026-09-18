@@ -22,5 +22,8 @@
 
     # 6. 網路探測與主機掃描
     arping hping fping socat netcat zmap masscan nmap
+
+    # 7. 逆向 与 CPU探针
+    perf bpftrace
   ];
 }

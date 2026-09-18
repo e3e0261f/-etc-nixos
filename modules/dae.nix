@@ -113,6 +113,8 @@ in
           domain(full: dns.alidns.com) -> direct(must)
           pname(systemd-resolved, dnsmasq, NetworkManager, dae) -> direct(must)
           dip(geoip:private) -> direct
+          # geosite(ads) -> reject
+          # geosite(category-ads-all) -> reject
 
           # ⭐️【第 1 級】：國外 DNS (8.8.8.8) 塞入代理隧道
           dip(8.8.8.8, 8.8.4.4) && dport(443) -> google_ai
