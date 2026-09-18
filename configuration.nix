@@ -408,7 +408,7 @@
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
     dust pciutils scanmem alsa-utils keyd
-    usbutils esptool
+    usbutils esptool espflash
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
     fuzzel waybar mako
