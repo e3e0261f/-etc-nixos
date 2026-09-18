@@ -1,22 +1,22 @@
-          # cf_h3e_family: 'https://security.cloudflare-dns.com/dns-query'
-          # # 封鎖惡意軟體、成人內容
-          # cf_h3e_sec: 'https://family.cloudflare-dns.com/dns-query'
-          # cf_doh3: '1dot1dot1dot1.cloudflare-dns.com'
-          # cf_doh3_domains: 'https://cloudflare-dns.com/dns-query'
-          # cf_doh3_ip: 'https://1.1.1.1/dns-query'
-          # cf_h3_1: 'h3://1.1.1.1:443/dns-query'
-          # cf_h3_2: 'h3://1.0.0.1:443/dns-query'
-          # # 國外備用：Google DoH3
-          # google_h3: 'h3://8.8.8.8:443/dns-query'
-          # # 國內主解析：阿里 DoH3（國內直連，極速無污染）
-          # ali_h3: 'h3://223.5.5.5:443/dns-query'
-          # cfdns: 'tcp+udp://1.1.1.1:53'
-          # googledns: 'tcp+udp://8.8.8.8:53'
-          # alidns: 'udp://dns.alidns.com:53'
-          # 2. 海外域名交給 NextDNS，享有乾淨、無污染且能擋廣告的解析
-          # nextdns: 'https://nextdns.io'
+# cf_h3e_family: 'https://security.cloudflare-dns.com/dns-query'
+# # 封鎖惡意軟體、成人內容
+# cf_h3e_sec: 'https://family.cloudflare-dns.com/dns-query'
+# cf_doh3: '1dot1dot1dot1.cloudflare-dns.com'
+# cf_doh3_domains: 'https://cloudflare-dns.com/dns-query'
+# cf_doh3_ip: 'https://1.1.1.1/dns-query'
+# cf_h3_1: 'h3://1.1.1.1:443/dns-query'
+# cf_h3_2: 'h3://1.0.0.1:443/dns-query'
+# # 國外備用：Google DoH3
+# google_h3: 'h3://8.8.8.8:443/dns-query'
+# # 國內主解析：阿里 DoH3（國內直連，極速無污染）
+# ali_h3: 'h3://223.5.5.5:443/dns-query'
+# cfdns: 'tcp+udp://1.1.1.1:53'
+# googledns: 'tcp+udp://8.8.8.8:53'
+# alidns: 'udp://dns.alidns.com:53'
+# 2. 海外域名交給 NextDNS，享有乾淨、無污染且能擋廣告的解析
+# nextdns: 'https://nextdns.io'
 # /etc/nixos/modules/dae-h3.nix (或 dae.nix)
-{ config, pkgs, inputs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   my-dae-assets = pkgs.stdenv.mkDerivation {
@@ -65,8 +65,14 @@ in
         }
         routing {
           request {
-            qname(geosite:cn) -> ali_h3
-            fallback: cf_doh3_domains
+            # qname(geosite:cn) -> ali_h3
+            # qname(geosite:github) -> cf_doh3_domains
+            # 1. 明确被 GFW 封锁的域名以及 GitHub，走海外防污染解析
+            qname(geosite:gfw, geosite:github) -> cf_doh3_domains
+            
+            # 2. 其他所有域名（国内站点 + 未被墙的正常海外站点）默认走阿里 DNS
+            fallback: ali_h3
+            # fallback: cf_doh3_domains
           }
         }
       }
@@ -79,20 +85,20 @@ in
           cheap {
               policy: min_moving_avg
               # policy: random
-              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG')
+              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG|HiNet')
           }
 
           # 2. Google AI 專用池：排除 HK、廣州、4倍、6倍與公告
           google_ai {
               policy: min_moving_avg
-              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG')
+              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG|HiNet')
           }
 
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
               # policy: min_moving_avg
               policy: random
-              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG')
+              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG|HiNet')
           }
       }
 
@@ -104,12 +110,15 @@ in
           # 1. 阿爾比恩全流量直連放行（交給路由器 UU 加速器專線處理！）
           pname(Albion-Online, Albion-Online.bin, albion-online) -> direct(must)
           domain(suffix: albiononline.com) -> direct(must)
+          domain(geosite:github) -> direct
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
           pname(nix-daemon, git, gix, git-remote-http, aria2c, steam) -> direct(must)
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
+          dip(172.0.0.1) -> direct(must)
+
           domain(full: dns.alidns.com) -> direct(must)
           pname(systemd-resolved, dnsmasq, NetworkManager, dae) -> direct(must)
           dip(geoip:private) -> direct
