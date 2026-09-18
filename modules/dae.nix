@@ -65,14 +65,8 @@ in
         }
         routing {
           request {
-            # qname(geosite:cn) -> ali_h3
-            # qname(geosite:github) -> cf_doh3_domains
-            # 1. 明确被 GFW 封锁的域名以及 GitHub，走海外防污染解析
-            qname(geosite:gfw, geosite:github) -> cf_doh3_domains
-            
-            # 2. 其他所有域名（国内站点 + 未被墙的正常海外站点）默认走阿里 DNS
-            fallback: ali_h3
-            # fallback: cf_doh3_domains
+            qname(geosite:cn) -> ali_h3
+            fallback: cf_doh3_domains
           }
         }
       }
@@ -83,22 +77,22 @@ in
       group {
           # 1. 大流量省錢池：排除 4倍、6倍、公告、香港
           cheap {
-              policy: min_moving_avg
-              # policy: random
-              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG|HiNet')
+              # policy: min_moving_avg
+              policy: random
+              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG')
           }
 
           # 2. Google AI 專用池：排除 HK、廣州、4倍、6倍與公告
           google_ai {
               policy: min_moving_avg
-              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG|HiNet')
+              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG')
           }
 
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
               # policy: min_moving_avg
               policy: random
-              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG|HiNet')
+              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG')
           }
       }
 
@@ -113,7 +107,7 @@ in
           domain(geosite:github) -> direct
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
-          pname(nix-daemon, git, gix, git-remote-http, aria2c, steam) -> direct(must)
+          pname(nix-daemon, gix, git-remote-http, aria2c, steam) -> direct(must)
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
