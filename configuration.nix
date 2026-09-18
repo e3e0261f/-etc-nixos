@@ -49,7 +49,7 @@
   programs.gamemode.enable = true;
 
   # 顯式關閉 GNOME Keyring（如果你完全不想用它）
-  services.gnome.gnome-keyring.enable = false;
+  services.gnome.gnome-keyring.enable = true;
 
   boot.extraModprobeConfig = ''
   options snd_hda_intel power_save=0 power_save_controller=N
@@ -408,6 +408,7 @@
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
     dust pciutils scanmem alsa-utils keyd
+    usbutils
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
     fuzzel waybar mako

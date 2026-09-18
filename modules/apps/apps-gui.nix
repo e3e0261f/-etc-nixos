@@ -16,5 +16,6 @@
     waypaper
     loupe
     spotify
+    ente-auth
   ];
 }
