@@ -66,6 +66,7 @@ in
         routing {
           request {
             qname(geosite:cn) -> ali_h3
+            qname(geosite:github) -> cf_doh3_domains
             fallback: cf_doh3_domains
           }
         }
@@ -77,8 +78,8 @@ in
       group {
           # 1. 大流量省錢池：排除 4倍、6倍、公告、香港
           cheap {
-              # policy: min_moving_avg
-              policy: random
+              policy: min_moving_avg
+              # policy: random
               filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG')
           }
 
@@ -104,14 +105,15 @@ in
           # 1. 阿爾比恩全流量直連放行（交給路由器 UU 加速器專線處理！）
           pname(Albion-Online, Albion-Online.bin, albion-online) -> direct(must)
           domain(suffix: albiononline.com) -> direct(must)
-          domain(geosite:github) -> direct
+          domain(suffix: githubusercontent.com) -> cheap
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
           pname(nix-daemon, gix, git-remote-http, aria2c, steam) -> direct(must)
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
-          dip(172.0.0.1) -> direct(must)
+          dip(4.3.2.1) -> direct(must)
+          
 
           domain(full: dns.alidns.com) -> direct(must)
           pname(systemd-resolved, dnsmasq, NetworkManager, dae) -> direct(must)

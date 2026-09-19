@@ -15,7 +15,7 @@
     cewl crunch hydra medusa
 
     # 4. Web 滲透與掃描
-    httpx whatweb wpscan ffuf nikto sqlmap
+    httpx whatweb wpscan ffuf nikto sqlmap oha
 
     # 5. 網路流量與封包分析 (IDS/嗅探)
     suricata mitmproxy ngrep dsniff bettercap tcpdump traceroute
