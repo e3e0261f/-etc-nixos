@@ -10,7 +10,6 @@
     ./modules/nix-save.nix
     ./modules/keyd.nix
     # ./modules/helix.nix
-    # ./modules/dae-cloudflare.nix
     ./modules/dae.nix
     ./modules/pipewire.nix
     # =======================================================

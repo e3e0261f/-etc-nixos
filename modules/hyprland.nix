@@ -36,44 +36,44 @@
   # 1. 視窗規則模組 (精準排版與置中懸浮)
   # =======================================================
   xdg.configFile."MYHYprLUa/window_rules.lua".text = ''
-    hl.window_rule({ name = "float_fcitx", match = { class = "org.fcitx." }, float = true })
-    hl.window_rule({ name = "vlc", match = { class = "vlc" }, float = true })
-    hl.window_rule({ name = "vscodium", match = { class = "vscodium" }, float = true})
-    hl.window_rule({ name = "spotify", match = { class = "spotify" }, float = true })
-    hl.window_rule({ name = "nemo", match = { class = "nemo" }, float = true })
-    hl.window_rule({ name = "steam", match = { class = "steam" }, float = true })
-    hl.window_rule({ name = "org.qbittorrent", match = { class = "org.qbittorrent" }, float = true })
-    hl.window_rule({ name = "float_pavu", match = { class = "pavucontrol" }, float = true })
-    hl.window_rule({ name = "float_dolphin", match = { class = "org.kde.dolphin" }, float = true })
-    hl.window_rule({ name = "float_yad", match = { class = "yad" }, float = true, center = "1" })
-    hl.window_rule({ name = "center_float", match = { float = true }, center = true })
+    -- 0. 防全屏核心防御 & XWayland 修复
+    hl.window_rule({ name = "suppress_maximize", match = { class = ".*" }, suppress_event = "maximize" })
+    hl.window_rule({ name = "fix_xwayland_drags", match = { class = "^$", title = "^$", xwayland = true, float = true, fullscreen = false, pin = false }, no_focus = true })
 
-    -- ⭐️ 1. Chromium 鎖定 Workspace 1
-    hl.window_rule({ name = "chromium_ws1", match = { class = "chromium" }, workspace = "1" })
-    hl.window_rule({ name = "chromium_browser_ws1", match = { class = "chromium-browser" }, workspace = "1" })
+    -- 1. 系统通用弹窗 / 文件选择器 / 认证窗口
+    hl.window_rule({ name = "common_file_dialogs", match = { title = "^(Open File|Open Folder|Save As|Save File|另存为|打开文件|打开文件夹|Choose Files|File Upload)$" }, float = true, center = true, size = "60% 65%" })
+    hl.window_rule({ name = "portal_dialogs", match = { class = "^(xdg-desktop-portal-.*)$" }, float = true, center = true, size = "65% 70%" })
+    hl.window_rule({ name = "auth_dialogs", match = { class = "^(yad|io\\.ente\\.auth|ente_auth|pinentry-.*|gcr-prompter|.*polkit.*)$" }, float = true, center = true })
+    hl.window_rule({ name = "keepassxc_dialogs", match = { class = "^(org\\.keepassxc\\.KeePassXC)$", title = "^(KeePassXC - .*|解锁数据库.*|Unlock.*|确认.*)$" }, float = true, center = true })
 
-    -- ⭐️ 1. google-chrome 鎖定 Workspace 1
-    hl.window_rule({ name = "google-chrome_ws1", match = { class = "google-chrome" }, workspace = "1" })
-    hl.window_rule({ name = "google-chrome_browser_ws1", match = { class = "google-chrome-browser" }, workspace = "1" })
+    -- 2. 常用小工具 & 看图 & 翻译 & 壁纸
+    hl.window_rule({ name = "float_swappy", match = { class = "^(swappy)$" }, float = true, center = true })
+    hl.window_rule({ name = "float_crow_translate", match = { class = "^(io\\.crow_translate\\.CrowTranslate|crow-translate)$" }, float = true, center = true, size = "45% 50%" })
+    hl.window_rule({ name = "float_media_viewers", match = { class = "^(waypaper|org\\.gnome\\.Loupe)$" }, float = true, center = true, size = "65% 70%" })
+    hl.window_rule({ name = "float_fcitx5", match = { class = "^(org\\.fcitx\\..*|fcitx5-config-qt|kcm_fcitx5)$" }, float = true, center = true, size = "50% 60%" })
 
-    -- ⭐️ 2. Kitty 專屬右側半屏懸浮
-    hl.window_rule({ name = "kitty", match = { class = "kitty" }, float = true, size = "50% 100%", move = "50% 0" })
+    -- 3. 独立应用浮动设置
+    hl.window_rule({ name = "float_pavu", match = { class = "^(pavucontrol|org\\.pulseaudio\\.pavucontrol)$" }, float = true, center = true, size = "50% 60%" })
+    hl.window_rule({ name = "float_vlc", match = { class = "vlc" }, float = true, center = true })
+    hl.window_rule({ name = "float_spotify", match = { class = "^(spotify|Spotify)$" }, float = true, center = true, size = "65% 70%" })
+    hl.window_rule({ name = "float_vscodium", match = { class = "^(codium|vscodium|VSCodium)$" }, float = true })
+    hl.window_rule({ name = "float_nemo", match = { class = "^(nemo|Nemo)$" }, float = true, center = true, size = "60% 65%" })
+    hl.window_rule({ name = "float_dolphin", match = { class = "org.kde.dolphin" }, float = true, center = true, size = "60% 65%" })
+    hl.window_rule({ name = "float_ark", match = { class = "org.kde.ark" }, float = true, center = true })
+    hl.window_rule({ name = "file_progress", match = { class = "^(Thunar|thunar|nemo|Nemo|org\\.kde\\.dolphin)$", title = "^(文件操作进度|File Operation Progress|Confirm to replace files|属性|Properties)$" }, float = true, center = true })
+    hl.window_rule({ name = "float_qbittorrent", match = { class = "org.qbittorrent.qBittorrent" }, float = true, center = true })
+    hl.window_rule({ name = "float_steam_dialogs", match = { class = "^(steam)$", title = "^(Friends List|Settings|好友列表|设置|Steam Guard.*)$" }, float = true })
+    hl.window_rule({ name = "browser_pip", match = { title = "^(Picture-in-Picture|画中画)$" }, float = true, pin = true, keep_aspect_ratio = true, size = "28% 28%", move = "70% 70%" })
 
-    -- ⭐️ 3. Workspace 4：音訊雙雄對開 (靜默不搶視角)
-    hl.window_rule({ name = "qpwgraph_ws4_left", match = { class = "org.rncbc.qpwgraph" }, workspace = "4 silent", size = "50% 100%", move = "0 0" })
-    hl.window_rule({ name = "easyeffects_ws4_right", match = { class = "com.github.wwmm.easyeffects" }, workspace = "4 silent", size = "50% 100%", move = "50% 0" })
-
-    -- Discord 鎖定 Workspace 3
-    hl.window_rule({ name = "discord", match = { class = "discord" }, workspace = "3 silent" })
-
-    -- ⭐️ 4. Yazi 檔案管理器：75% 置中優雅懸浮
-    hl.window_rule({
-      name = "yazi_float_center",
-      match = { class = "yazi-float" },
-      float = true,
-      center = true,
-      size = "75% 75%",
-    })
+    -- 4. 专属工作区分流 & 悬浮布局
+    hl.window_rule({ name = "chromium_ws1", match = { class = "^(chromium|chromium-browser)$" }, workspace = "1" })
+    hl.window_rule({ name = "chrome_ws1", match = { class = "^(google-chrome|google-chrome-browser)$" }, workspace = "1" })
+    hl.window_rule({ name = "discord_ws3", match = { class = "discord" }, workspace = "3 silent" })
+    hl.window_rule({ name = "kitty_half_right", match = { class = "kitty" }, float = true, size = "50% 100%", move = "50% 0" })
+    hl.window_rule({ name = "qpwgraph_ws4_left", match = { class = "org.rncbc.qpwgraph" }, workspace = "4 silent", float = true, size = "50% 100%", move = "0 0" })
+    hl.window_rule({ name = "easyeffects_ws4_right", match = { class = "com.github.wwmm.easyeffects" }, workspace = "4 silent", float = true, size = "50% 100%", move = "50% 0" })
+    hl.window_rule({ name = "yazi_float_center", match = { class = "yazi-float" }, float = true, center = true, size = "75% 75%" })
+    hl.window_rule({ name = "google-chrome", match = { class = "^(google-chrome|chromium-browser)$", title = "^.*(偵測到|Account and password|Pico Key|USB).*$" }, float = true, size = "360 140", move = "100%-380 40" })
   '';
 
   # =======================================================
@@ -335,7 +335,7 @@
       input = {
         accel_profile = "flat", -- 絕對直線，無軟體加速
         kb_layout  = "us",
-        follow_mouse = 1,
+        follow_mouse = 0,
         sensitivity = 0,
         touchpad = { natural_scroll = false },
       },
