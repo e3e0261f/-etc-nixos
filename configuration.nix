@@ -55,6 +55,12 @@
   options snd_hda_intel power_save=0 power_save_controller=N
   '';
 
+  # 啟用 PC/SC 智慧卡精靈
+  services.pcscd.enable = true;
+
+  # 2. 啟用智慧卡硬體支援（NixOS 會自動載入對應的 udev 規則，這步非常重要！）
+  hardware.gpgSmartcards.enable = true;
+
   # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
   qt = {
     enable = true;
@@ -408,7 +414,7 @@
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
     dust pciutils scanmem alsa-utils keyd
-    usbutils esptool espflash tio
+    usbutils esptool espflash tio opensc
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
     fuzzel waybar mako
