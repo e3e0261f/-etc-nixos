@@ -21,7 +21,7 @@
   ];
 
 
-  system.nixos.tags = [ "Perf" ];
+  system.nixos.tags = [ "ESP32" ];
 
 	boot.kernelPackages = pkgs.linuxPackages_zen;
 	# boot.initrd.kernelModules = [ "amdgpu" ];
