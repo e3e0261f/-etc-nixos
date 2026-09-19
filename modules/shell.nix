@@ -8,13 +8,12 @@
       gcl = "git clone --depth 1";
       l = "ls -alh";
       ll = "ls -l";
-      ls = "ls --color=tty";
-      y = "yazi"; 
-      zj = "zellij"; 
       top = "btop"; 
       nu = "nushell"; 
       helix = "hx";
-      cc = "cc";
+      al = "a -l";
+      aa = "a -a";
+      as = "a -s";
     };
 
     functions = {
