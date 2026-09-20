@@ -17,6 +17,5 @@
     loupe
     spotify
     ente-auth
-    hydrogen  #强大鼓机
   ];
 }
