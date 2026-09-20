@@ -3,7 +3,6 @@
 {
   # 🎯 這裡成了唯一的「插線板 / 總路由」
   imports = [
-    # ./fcitx-ibus.nix
     ./hyprland.nix
     # ./waybar.nix
     ./openmega.nix

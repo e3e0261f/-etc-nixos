@@ -60,6 +60,11 @@
   # 2. 啟用智慧卡硬體支援（NixOS 會自動載入對應的 udev 規則，這步非常重要！）
   hardware.gpgSmartcards.enable = true;
 
+  services.udev.extraRules = ''
+  # 禁用主板自带的旧华硕板载蓝牙 (Broadcom BCM20702 蓝牙 4.0)
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="180a", ATTR{authorized}="0"
+  '';
+
   # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
   qt = {
     enable = true;
