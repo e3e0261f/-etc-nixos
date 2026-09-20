@@ -8,8 +8,6 @@
     spotify
     discord
     keepassxc
-    vlc
-    mplayer
     crow-translate
     gimagereader
     tesseract
