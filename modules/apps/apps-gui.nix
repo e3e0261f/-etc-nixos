@@ -16,5 +16,6 @@
     spotify
     ente-auth
     hydrogen  #强大鼓机
+    sonic-pi
   ];
 }
