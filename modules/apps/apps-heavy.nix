@@ -19,6 +19,7 @@
     tsx
     libfido2
     fido2-manage
+    ruby
 
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
