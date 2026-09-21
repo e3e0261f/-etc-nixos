@@ -422,7 +422,7 @@
     mpv
     
     # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
-    fuzzel waybar mako
+    # fuzzel waybar mako
     hyprlauncher hyprshutdown
     hypridle hyprlock hyprpaper hyprpicker
     pamixer ddcutil brightnessctl libcava lm_sensors aubio
