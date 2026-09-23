@@ -76,6 +76,14 @@
   };
 
   nix.settings = {
+    substituters = [
+      "https://ustc.edu.cn" # 1. 优先尝试科大
+      "https://tsinghua.edu.cn" # 2. 科大没有或挂了，走清华
+      "https://nixos.org" # 3. 都没找到，走官方源
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
     # max-jobs = 16;
     max-jobs = "auto";
     cores = 0; 
