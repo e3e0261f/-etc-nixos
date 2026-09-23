@@ -119,7 +119,7 @@ in
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
           pname(gix, git-remote-http, aria2c, steam) -> direct(must)
-          pname(nix-daemon) -> for4
+          pname(nix-daemon, git) -> cheap
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
@@ -178,7 +178,7 @@ in
 
           # Mega.nz 專用高速通道
           domain(suffix: mega.nz) -> premium_high
-          pname(discord, git) -> premium_high
+          pname(discord) -> premium_high
           domain(geosite:discord) -> premium_high
 
           # ⭐️【終極兜底】：預設走 1倍 cheap 省錢池！（非常明智的改動！）
