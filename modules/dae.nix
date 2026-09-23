@@ -80,20 +80,20 @@ in
           cheap {
               policy: min_moving_avg
               # policy: random
-              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG|直連')
+              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期')
           }
 
           # 2. Google AI 專用池：排除 HK、廣州、4倍、6倍與公告
           google_ai {
               policy: min_moving_avg
-              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG|直連')
+              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP')
           }
 
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
               # policy: min_moving_avg
               policy: random
-              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG|直連')
+              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期')
           }
       }
 

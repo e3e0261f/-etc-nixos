@@ -66,8 +66,8 @@
   SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="180a", ATTR{authorized}="0"
   '';
 
-  zramSwap.enable = true;
-  zramSwap.memoryPercent = 50; # 分配 16G 内存作为无加密的高速压缩 Swap
+  # zramSwap.enable = true;
+  # zramSwap.memoryPercent = 50; # 分配 16G 内存作为无加密的高速压缩 Swap
 
   # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
   qt = {
@@ -314,13 +314,17 @@
   
   # 字體
   fonts.packages = with pkgs; [
-    font-awesome_4
+    # 1. 现代无衬线西文字体（开源版 Apple SF Pro）
+    inter
+    # 2. 极客代码与终端等宽字体（自带全套开发图标）
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.symbols-only   # 补全所有缺失的特殊符号
+    # 3. 中文支持（黑体/苹方平替）
     noto-fonts-cjk-sans
-    noto-fonts-color-emoji  # 👈 將 noto-fonts-emoji 改成這個
-    # 2. 💡 關鍵：把上面那 10 個倉庫的全部符號一網打盡！
-    nerd-fonts.jetbrains-mono # 自帶全套開發者圖示的等寬字體
-    nerd-fonts.symbols-only   # 獨立的「純圖示符號字庫」(補全所有缺失符號)
-    font-awesome              # 官方 Font Awesome 6
+    # 4. 彩色 Emoji 表情
+    noto-fonts-color-emoji
+    # 5. 网页与状态栏图标字库 (Font Awesome 6)
+    font-awesome
   ];
 
   # --- 4. 桌面環境與圖形介面 ---
@@ -417,6 +421,9 @@
   
   # --- 6. 軟體安裝清單 (整合你之前 nix profile 的所有軟體) ---
   environment.systemPackages = with pkgs; [
+    (discord.override {
+      withOpenASAR = true;
+    })
         # 1. 救磚與終端必備
     vim neovim git wget curl unzip
     procps lvm2 p7zip unrar
