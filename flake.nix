@@ -1,7 +1,10 @@
 {
   inputs = {
+    # 将官方 github:NixOS/nixpkgs 替换为清华镜像
+    # nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     my-rules.url = "github:e3e0261f/GEoIP-GEoSITE";
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
     my-rules.flake = false;
 
     caelestia-cli = {
@@ -36,12 +39,12 @@
   };
   # /etc/nixos/flake.nix
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
+  nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+    specialArgs = { inherit inputs; };
+    modules = [
+      { nixpkgs.hostPlatform = "x86_64-linux"; }
+      ./configuration.nix
+      home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

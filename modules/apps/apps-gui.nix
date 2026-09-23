@@ -18,7 +18,7 @@
     hydrogen  #强大鼓机
     sonic-pi
     supercollider
-    emacs
+    # emacs-pgtk
     sl
   ];
 }

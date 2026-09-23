@@ -22,6 +22,7 @@
     ./dev.nix        # ⭐️ Rust + JS 主力開發環境
     ./rhys.nix
     ./shell.nix
+    # ./emacs.nix
   ];
 
   home.sessionVariables = {

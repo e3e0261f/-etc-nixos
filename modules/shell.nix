@@ -53,7 +53,7 @@
     };
 
     # === ⭐️ 使用者自訂函數庫與環境變數 (initExtra) ===
-    initExtra = ''
+    initContent = ''
       # 1. GPG SSH Agent 代理
       export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)
 

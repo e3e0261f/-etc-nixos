@@ -1,3 +1,45 @@
+sudo nixos-rebuild switch --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org"
+
+nix.settings.substituters = [
+  "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+  "https://cache.nixos.org"
+];
+
+wget https://mirrors.ustc.edu.cn/nixos-images/nixos-24.11/nixos-graphical-24.11-x86_64-linux.iso
+
+wget https://mirrors.tuna.tsinghua.edu.cn/nixos-images/nixos-24.11/nixos-graphical-24.11-x86_64-linux.iso
+
+在国内重装 NixOS，最核心的避坑逻辑是：“镜像源先换好、网络通道准备好、离线配置留备份”。因为 NixOS 极度依赖在线拉取软件包和 Git 仓库，一旦在安装环境（Installer Live Environment）里没网或没设镜像源，重装过程会非常痛苦。以下为你整理的“NixOS 国内重装救命清单与关键命令”：1. 准备工作（安装前的救命备份）备份 /etc/nixos 文件夹：确保你最新的 flake.nix、hardware-configuration.nix 和 configuration.nix 已经成功 git push 到 GitHub，或者手动打包拷贝到 U 盘里。记录磁盘分区信息：在旧系统里最后运行一次 lsblk -f 并截图/保存，明确你的系统盘（如 /dev/nvme0n1）以及 EFI 分区位置。2. 引导进 Live 系统后的“救命第一步”（网络与镜像源）启动进 NixOS ISO 安装环境后，千万不要直接运行 nixos-install，先配置国内源！① 确认网络连接Bashping -c 3 baidu.com
+如果是 Wi-Fi，运行 nmtui 图形化连接无线网络。② 临时启用清华/中科大二进制缓存源（救命关键）在 Live 系统中，编辑 /etc/nix/nix.conf（如果不存在则新建）：Bashsudo mkdir -p /etc/nix
+sudo nano /etc/nix/nix.conf
+贴入以下内容，强制让 Nix 走国内镜像站下载所有依赖：Plaintextsubstituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org
+experimental-features = nix-command flakes
+3. 磁盘挂载与配置准备假设你已经分好了区（例如 /dev/nvme0n1p2 是根分区，/dev/nvme0n1p1 是 EFI 分区）：Bash# 1. 挂载根分区
+sudo mount /dev/nvme0n1p2 /mnt
+
+# 2. 挂载 Boot/EFI 分区
+sudo mkdir -p /mnt/boot
+sudo mount /dev/nvme0n1p1 /mnt/boot
+
+# 3. 将你的配置拷贝回 /mnt/etc/nixos
+sudo mkdir -p /mnt/etc/nixos
+# 如果有 Git 备份，直接 clone（或者从 U 盘复制）
+sudo git clone https://github.com/你的用户名/你的配置仓库.git /mnt/etc/nixos
+4. 安装阶段的救命命令在执行安装时，一定要在命令中显式带上国内镜像源参数，防止它跳回官方源卡死：如果你使用的是传统的 configuration.nix：Bashsudo nixos-install --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org"
+如果你使用的是 Flakes 架构（如 flake.nix）：Bashsudo nixos-install --flake /mnt/etc/nixos#你的主机名 --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org"
+5. 新系统首次启动后的配置（写死国内源）重装成功并重启进入新系统后，为了确保以后每次 nix-save 或 nix-test 速度飞快，请确保你的 configuration.nix（或 Flake 引入的模块）中写死了镜像源：Nix# 在 configuration.nix 中添加
+nix.settings = {
+  substituters = [
+    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+    "https://cache.nixos.org"
+  ];
+  # 自动清理旧世代，节省空间
+  auto-optimise-store = true;
+};
+6. 一句话救命速查表（急救卡片）GitHub 拉不下来配置？ -> 使用 ghproxy 镜像代理：git clone [https://mirror.ghproxy.com/https://github.com/你的用户名/仓库.git](https://mirror.ghproxy.com/https://github.com/你的用户名/仓库.git)Nix 下载一直卡在 0% 或超时？ -> 检查是否忘记加 --option substituters "[https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store](https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store)"。找不到硬件配置？ -> 在 /mnt 下运行 sudo nixos-generate-config --root /mnt 生成最新的 hardware-configuration.nix。当前功能列表总结nix-test：支持热回滚（-r / --rollback），恢复至健康世代并平滑刷新 Waybar。   自动检测并运行 ~/.config/hypr/hyprland.lua 的 Lua 语法安全检查。   包含 git add -A 并自动提交 git commit -m "TEst"，彻底清空 Git tree is dirty 警告。   临时生效测试配置 (nixos-rebuild test)，测试成功后自动刷新 Waybar。   nix-save：支持查询历史世代清单（-l / --list）。   支持精准世代回滚（-r [世代号]）或回滚至上一代（-r）。   整合 Lua 语法安全检查（含强行继续的交互确认）。   升级为 git add -A 并自动执行正式构建 (nixos-rebuild switch)。   自动提示是否 commit 并同步（git push）至 GitHub 远程仓库。   nix-load：强制从 GitHub 远程 main 分支拉取最新配置。   自动在 /etc/nixos/old/ 下创建带有时间戳的完整备份。   执行 git reset --hard 并重建系统。   trans-gui：划词/区域截图（grim + slurp）并使用 Tesseract OCR 识图。   调用 Crow Translate 翻译为繁体/简体中文，结果自动复制到剪贴板并弹窗显示（YAD GUI）。
+
+
+
 ######
 
 2026 年程式員的「自救佈局」建議：

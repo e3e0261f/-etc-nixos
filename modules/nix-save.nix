@@ -38,7 +38,8 @@
 
       echo "🧪 正在執行安全測試 (nixos-rebuild test)..."
       cd /etc/nixos
-      git add .
+      git add -A
+      git commit -m "TEst"
       if sudo nixos-rebuild test --flake .#nixos; then
           echo "✅ 測試成功！目前效果已臨時生效。"
           
