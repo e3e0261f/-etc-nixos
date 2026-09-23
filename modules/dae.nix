@@ -91,6 +91,13 @@ in
               filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP')
           }
 
+          # 4倍
+          for4 {
+              policy: min_moving_avg
+              # policy: fixed(1)
+              filter: subtag(my_sub) && name(regex: '4倍') && !name(regex: '剩余|到期')
+          }
+          
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
               # policy: min_moving_avg
@@ -111,7 +118,8 @@ in
           domain(suffix: githubusercontent.com) -> cheap
 
           # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
-          pname(nix-daemon, gix, git-remote-http, aria2c, steam) -> direct(must)
+          pname(gix, git-remote-http, aria2c, steam) -> direct(must)
+          pname(nix-daemon) -> for4
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)

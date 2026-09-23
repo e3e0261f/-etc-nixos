@@ -49,6 +49,7 @@
       al    = "a -l";
       aa    = "a -a";
       as    = "a -s";
+      em    = "emacs -nw";
     };
 
     # === ⭐️ 使用者自訂函數庫與環境變數 (initExtra) ===
