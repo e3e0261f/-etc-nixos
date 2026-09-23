@@ -66,7 +66,7 @@ in
         routing {
           request {
             qname(geosite:cn) -> ali_h3
-            qname(geosite:github) -> cf_doh3_domains
+            qname(geosite:github) -> ali_h3
             fallback: cf_doh3_domains
           }
         }
@@ -117,9 +117,8 @@ in
           domain(suffix: albiononline.com) -> direct(must)
           domain(suffix: githubusercontent.com) -> cheap
 
-          # 2. Nix 官方構建守護進程 + Git 克隆 + Aria2 下載（不耗費任何代理流量）
-          pname(gix, git-remote-http, aria2c, steam) -> direct(must)
-          pname(nix-daemon, git) -> cheap
+          pname(gix, aria2c, steam) -> direct(must)
+          pname(nix-daemon) -> cheap
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
@@ -166,7 +165,6 @@ in
           # ⭐️【第 4 級】：大流量大數據專區（鎖死在 cheap 池，嚴禁 4倍/6倍）
           domain(geosite:youtube) -> cheap
           domain(geosite:steam) -> cheap
-          domain(geosite:github) -> cheap
           domain(geosite:docker) -> cheap
           domain(geosite:telegram) -> cheap
           domain(geosite:netflix) -> cheap
