@@ -80,20 +80,20 @@ in
           cheap {
               policy: min_moving_avg
               # policy: random
-              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG')
+              filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期|HK|BGP|SG|直連')
           }
 
           # 2. Google AI 專用池：排除 HK、廣州、4倍、6倍與公告
           google_ai {
               policy: min_moving_avg
-              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG')
+              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP|SG|直連')
           }
 
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
               # policy: min_moving_avg
               policy: random
-              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG')
+              filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期|HK|BGP|SG|直連')
           }
       }
 
@@ -123,6 +123,7 @@ in
 
           # ⭐️【第 1 級】：國外 DNS (8.8.8.8) 塞入代理隧道
           dip(8.8.8.8, 8.8.4.4) && dport(443) -> google_ai
+          dip(192.168.2.0/24) && dport(22) -> google_ai
 
           # ⭐️【第 2 級】：國內服務直連
           domain(geosite:apple@cn) -> direct
@@ -135,8 +136,8 @@ in
           domain(suffix: miwifi.com) -> direct(must)
           domain(suffix: xiaomi.com) -> direct(must)
           domain(suffix: mi.com) -> direct(must)
-          domain(suffix: z.luxury) -> direct(must)
-          domain(suffix: rockey-repo.org) -> direct(must)
+          domain(suffix: z.luxury) -> direct
+          domain(suffix: rockey-repo.org) -> direct
           
 
           # ⭐️【第 3 級】：Google AI 與相關服務（修正語法，拿掉錯誤的 must）
@@ -166,6 +167,8 @@ in
 
           # Mega.nz 專用高速通道
           domain(suffix: mega.nz) -> premium_high
+          pname(discord) -> premium_high
+          domain(geosite:discord) -> premium_high
 
           # ⭐️【終極兜底】：預設走 1倍 cheap 省錢池！（非常明智的改動！）
           fallback: cheap

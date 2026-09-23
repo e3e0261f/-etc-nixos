@@ -20,7 +20,12 @@
     libfido2
     fido2-manage
     ruby
-
+    ripgrep
+    fd
+    dust
+    eza
+    android-tools 
+    peazip  p7zip unzip unrar
     # 你自訂的 FHS 環境
     (let base = pkgs.appimageTools.defaultFhsEnvArgs; in
       pkgs.buildFHSEnv (base // {
@@ -35,4 +40,22 @@
       })
     )
   ];
+
+    # 2. bat 配置 (自动配置高亮与主题)
+  programs.bat.enable = true;
+
+  # 4. zoxide 配置 (自动注入 Fish 挂载，直接开启 `z` 命令)
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
+  # 5. Fish 缩写 (Fish 独有的 abbr 比传统 alias 更好用)
+  programs.fish = {
+    enable = true;
+    shellAbbrs = {
+      # 可以在这里加你喜欢的快捷缩写
+      cat = "bat";
+    };
+  };
 }

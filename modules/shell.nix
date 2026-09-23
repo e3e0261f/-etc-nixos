@@ -4,16 +4,27 @@
 {
   programs.fish = {
     enable = true;
+
+    # 1. 互動式終端啟動邏輯（自動加載 zoxide 與 TTY 圖標判斷）
+    interactiveShellInit = ''
+      # 載入 zoxide (如果已安裝)
+      if command -v zoxide >/dev/null 2>&1
+        zoxide init fish | source
+      end
+    '';
+  
     shellAbbrs = {
-      gcl = "git clone --depth 1";
-      l = "ls -alh";
-      ll = "ls -l";
+      gcd = "git clone --depth 1";
       top = "btop"; 
       nu = "nushell"; 
       helix = "hx";
       al = "a -l";
       aa = "a -a";
       as = "a -s";
+      l = "eza -la";
+      ls = "eza";
+      ll = "eza -la --git";
+      tree = "eza --tree";
     };
 
     functions = {
