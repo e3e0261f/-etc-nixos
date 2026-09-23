@@ -76,7 +76,9 @@
   };
 
   nix.settings = {
-    max-jobs = 16;
+    # max-jobs = 16;
+    max-jobs = "auto";
+    cores = 0; 
     http-connections = 50; 
     min-free = 128000000;
     auto-optimise-store = true;
@@ -317,7 +319,7 @@
       withOpenASAR = true;
     })
     # 1. 救磚與終端必備
-    vim neovim git wget curl unzip
+    helix vim neovim git wget curl unzip
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
     dust pciutils scanmem alsa-utils keyd
