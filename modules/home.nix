@@ -4,15 +4,14 @@
   # 🎯 這裡成了唯一的「插線板 / 總路由」
   imports = [
     ./hyprland.nix
-    # ./waybar.nix
+    #./waybar.nix
     ./openmega.nix
     ./kitty.nix
-    ./shell.nix
     ./tools.nix
     ./helix.nix
     ./git.nix
     ./fcitx5.nix
-    # ./mako.nix
+    ./mako.nix
     ./fuzzel.nix
     ./scripts.nix
     ./copyfile.nix
@@ -22,6 +21,7 @@
     ./defaults.nix   # ⭐️ 預設軟體設定 (Chrome, Nemo, Helix)
     ./dev.nix        # ⭐️ Rust + JS 主力開發環境
     ./rhys.nix
+    ./shell.nix
   ];
 
   home.sessionVariables = {

@@ -80,14 +80,14 @@ in
           cheap {
               # policy: min_moving_avg
               # policy: random
-              policy: fixed(0)
+              policy: fixed(2)
               filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期')
           }
 
           # 2. Google AI 專用池：排除 HK、廣州、4倍、6倍與公告
           google_ai {
               policy: min_moving_avg
-              # policy: fixed(0)
+              # policy: fixed(1)
               filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP')
           }
 
@@ -95,7 +95,7 @@ in
           premium_high {
               # policy: min_moving_avg
               # policy: random
-              policy: fixed(0)
+              policy: fixed(1)
               filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期')
           }
       }

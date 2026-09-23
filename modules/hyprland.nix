@@ -195,10 +195,8 @@
     hl.on("hyprland.start", function ()
       hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
       hl.exec_cmd("fcitx5 -d")
-      --hl.exec_cmd("nm-applet --indicator")
       hl.exec_cmd("google-chrome")
       hl.exec_cmd("qpwgraph")
-      hl.exec_cmd("easyeffects --gapplication-service")
       hl.exec_cmd("discord")
       
       -- ⭐️ 核心保險：等背景程式就位後，把視角強制拉回 1 號工作區！
@@ -216,10 +214,6 @@
   #    ⭐️ 徹底刪除重複定義，解除暗淡，開啟高級質感
   # =======================================================
   xdg.configFile."MYHYprLUa/LOOKANDFEEL.lua".text = ''
-    -- 為 Waybar 啟用硬體加速雙重毛玻璃
-    --hl.layer_rule({ name = "waybar-blur", match = { namespace = "waybar" }, blur = true })
-    -- hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.2 })
-
     hl.config({
         cursor = {
         no_hardware_cursors = false,    -- ⭐️ 強制開啟顯卡硬體游標

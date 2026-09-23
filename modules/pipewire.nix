@@ -56,4 +56,22 @@
       ];
     };
   };
+
+    # 2. 確保系統已安裝 easyeffects
+  environment.systemPackages = [ pkgs.easyeffects ];
+
+  # 3. ⭐️ 原生 NixOS 宣告：由 systemd 嚴格管理 EasyEffects 的生命週期
+  systemd.user.services.easyeffects = {
+    description = "EasyEffects Audio Daemon";
+    # 當進入圖形桌面時啟動
+    wantedBy = [ "graphical-session.target" ];
+    # 綁定生命週期：PipeWire 重啟或桌面登出時，自動跟著重啟/終止
+    partOf = [ "pipewire.service" "graphical-session.target" ];
+    after = [ "pipewire.service" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.easyeffects}/bin/easyeffects --gapplication-service";
+      Restart = "on-failure";
+      RestartSec = "2s";
+    };
+  };
 }

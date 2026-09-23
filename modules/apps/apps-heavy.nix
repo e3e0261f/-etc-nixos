@@ -49,13 +49,4 @@
     enable = true;
     enableFishIntegration = true;
   };
-
-  # 5. Fish 缩写 (Fish 独有的 abbr 比传统 alias 更好用)
-  programs.fish = {
-    enable = true;
-    shellAbbrs = {
-      # 可以在这里加你喜欢的快捷缩写
-      cat = "bat";
-    };
-  };
 }

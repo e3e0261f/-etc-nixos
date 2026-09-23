@@ -1,23 +1,27 @@
-# shell.nix (由 home.nix 引入的使用者級 Shell 核心配置)
+# /etc/nixos/modules/zsh.nix
 { pkgs, ... }:
 
 {
-  # 1. ⭐️ Zsh 核心功能、神級插件與歷史調教
+  # 1. 啟用系統級 Zsh 與現代化神級插件
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    autosuggestion.enable = true;     # 灰字幽靈預測 (按 → 鍵補全)
-    syntaxHighlighting.enable = true; # 即時語法高亮 (打對變綠，打錯變紅)
+    autosuggestions.enable = true;    # ⭐️ 灰字幽靈預測（按 → 或 Ctrl+E 補全）
+    syntaxHighlighting.enable = true; # ⭐️ 即時語法高亮（正確變綠，打錯變紅）
 
-    history = {
-      size = 100000;
-      save = 100000;
-      path = "$HOME/.zsh_history";
-      ignoreAllDups = true;
-      share = true;
-    };
+    # 極客級歷史記錄調教
+    histSize = 100000;
+    histFile = "$HOME/.zsh_history";
+    setOptions = [
+      "EXTENDED_HISTORY"       # 記錄時間戳
+      "HIST_IGNORE_ALL_DUPS"   # 自動去重
+      "HIST_SAVE_NO_DUPS"      # 存檔去重
+      "SHARE_HISTORY"          # 多終端視窗即時共享歷史
+      "INC_APPEND_HISTORY"     # 立即寫入歷史
+      "AUTO_CD"                # 敲目錄名字直接進去（省略 cd）
+    ];
 
-    # === ⭐️ 現代四大神器 + 日常極客別名 ===
+    # === ⭐️ 現代化四大神器 + 終極日常別名 ===
     shellAliases = {
       # 📁 1. eza 矩陣（取代傳統 ls，自帶圖標、目錄優先、Git 狀態）
       ls   = "eza --icons --group-directories-first";
@@ -41,7 +45,7 @@
       rgi  = "rg -i";
       rgf  = "rg --files";
 
-      # 🛠️ 5. 其他極客日常縮寫
+      # 🛠️ 5. 其他極客高頻縮寫
       top   = "btop";
       gcd   = "git clone --depth 1";
       nu    = "nushell";
@@ -51,12 +55,12 @@
       as    = "a -s";
     };
 
-    # === ⭐️ 使用者自訂函數庫與環境變數 (initExtra) ===
-    initExtra = ''
-      # 1. GPG SSH Agent 代理
+    # === ⭐️ 終端初始化腳本（包含 GPG Agent 與所有自訂函數）===
+    interactiveShellInit = ''
+      # 1. 綁定 GPG SSH 代理（讓 GPG 密鑰直接當 SSH 密鑰用）
       export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)
 
-      # 2. 登出 / 關機
+      # 2. 登出 / 關機快捷
       logout() {
         command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'
       }
@@ -118,35 +122,13 @@
     '';
   };
 
-  # 2. ⭐️ Nushell 支援
-  programs.nushell.enable = true;
-
-  # 3. ⭐️ 智能目錄跳躍 zoxide (z 命令)
+  # 2. 啟用智能目錄跳躍 zoxide
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true;
   };
 
-  # 4. ⭐️ 模糊搜索 FZF
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # 5. ⭐️ 跨終端極速提示符 Starship
+  # 3. 啟用跨終端 Starship 提示符
   programs.starship = {
     enable = true;
-    enableZshIntegration = true;
   };
-
-  # 6. ⭐️ 使用者級別必備工具鏈
-  home.packages = with pkgs; [
-    eza         # 現代版 ls
-    bat         # 現代版 cat
-    fd          # 現代版 find
-    ripgrep     # 現代版 grep
-    btop        # 現代任務管理器
-    opencc      # 字幕繁簡轉換
-    diffutils   # 彩色 diff
-  ];
 }

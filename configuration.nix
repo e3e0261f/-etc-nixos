@@ -128,35 +128,8 @@
     "net.ipv4.tcp_wmem" = "4096 65536 16777216";
   };
   
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      complete -c copyfile -s u -l uri -d "使用 text/uri-list 格式 (瀏覽器/Discord)"
-      complete -c copyfile -s h -l help -d "顯示幫助訊息"
-    '';
-    shellInit = ''
-      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-    '';
-  };
-
   # 修复 Dolphin 打开方式
   environment.etc."xdg/menus/applications.menu".source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
-
-  environment.etc."fish/functions/proxy.fish".text = ''
-    function proxy
-        if test (count $argv) -eq 0
-            set -e http_proxy
-            set -e https_proxy
-            set -e all_proxy
-            echo "Proxy environment cleared. Welcome back to nature."
-        else
-            set -gx http_proxy http://127.0.0.1:$argv[1]
-            set -gx https_proxy http://127.0.0.1:$argv[1]
-            set -gx all_proxy socks5://127.0.0.1:$argv[1]
-            echo "Proxy set to port $argv[1]. Ready to fly."
-        end
-    end
-  '';
 
   services.gnome.gcr-ssh-agent.enable = false;
   services.gvfs.enable = true; 
@@ -328,8 +301,9 @@
     isNormalUser = true;
     description = "Rhys";
     extraGroups = [ "networkmanager" "wheel" "storage" "video" "render" "audio" "adbusers" ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
+  programs.zsh.enable = true;
 
   programs.gnupg.agent = {
     enable = true;
