@@ -74,14 +74,16 @@
     platformTheme = "gnome";
     style = "adwaita-dark";
   };
-
+  
   nix.settings = {
-    substituters = [
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-      "https://cache.nixos.org"
+    substituters = [ 
+      "https://mirrors.cernet.edu.cn/nix-channels/store" 
     ];
-    # max-jobs = 16;
-    max-jobs = "auto";
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+    max-jobs = 26;
+    # max-jobs = "auto";
     cores = 0; 
     http-connections = 50; 
     min-free = 128000000;

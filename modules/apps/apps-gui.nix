@@ -19,5 +19,6 @@
     sonic-pi
     supercollider
     # emacs
+    sl
   ];
 }
