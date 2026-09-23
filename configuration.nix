@@ -3,8 +3,6 @@
 { config, pkgs, inputs, ... }:
 
 {
-
-
   imports = [ 
     ./hardware-configuration.nix
     ./modules/nix-save.nix
@@ -21,180 +19,137 @@
     ./modules/ssh.nix
   ];
 
-
   system.nixos.tags = [ "0923" ];
 
-	boot.kernelPackages = pkgs.linuxPackages_zen;
-	# boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-    hardware.graphics = {
+  hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
-  # 必须写在 configuration.nix 的大括号内
-  security.rtkit.enable = true; # 必须开启！EasyEffects 和 Pipewire 降低延迟的核心依赖
-    # 启用蓝牙支持与 Bluez 守护进程
+
+  # 降低延迟的核心依赖
+  security.rtkit.enable = true;
+
+  # 启用蓝牙支持与 Bluez 守护进程
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true; # 开机自动激活蓝牙
-  services.blueman.enable = true;          # 提供蓝牙图表管理工具
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
-  # ⭐️ 為 Chromium 啟用 Widevine DRM 模組（支援 Spotify、Netflix 網頁播放）
+  # ⭐️ 為 Chromium 啟用 Widevine DRM 模組
   nixpkgs.config.chromium.enableWideVine = true;
-  # ⭐️ 讓 NixOS 完美相容並執行所有通用 Linux 下載的二進位程式與遊戲
+  # ⭐️ 讓 NixOS 完美相容並執行通用二進位程式與遊戲
   programs.nix-ld.enable = true;
-  # ⭐️ 開啟遊戲全速效能調度守護程序
+  # ⭐️ 開啟遊戲全速效能調度
   programs.gamemode.enable = true;
 
-  # 顯式關閉 GNOME Keyring（如果你完全不想用它）
   services.gnome.gnome-keyring.enable = true;
 
   boot.extraModprobeConfig = ''
-  options snd_hda_intel power_save=0 power_save_controller=N
+    options snd_hda_intel power_save=0 power_save_controller=N
   '';
 
-  # 啟用 PC/SC 智慧卡精靈
+  # 啟用智慧卡支援
   services.pcscd.enable = true;
-
-  # 2. 啟用智慧卡硬體支援（NixOS 會自動載入對應的 udev 規則，這步非常重要！）
   hardware.gpgSmartcards.enable = true;
 
   services.udev.extraRules = ''
-  # 禁用主板自带的旧华硕板载蓝牙 (Broadcom BCM20702 蓝牙 4.0)
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="180a", ATTR{authorized}="0"
+    # 禁用主板自带的旧华硕板载蓝牙 (Broadcom BCM20702 蓝牙 4.0)
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="180a", ATTR{authorized}="0"
   '';
 
-  # zramSwap.enable = true;
-  # zramSwap.memoryPercent = 50; # 分配 16G 内存作为无加密的高速压缩 Swap
+  # ⭐️ ✅ 启用纯内存高速无加密压缩 Swap (替换掉物理加密 Swap)
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
 
-  # ⭐️ 解決 Dolphin 等 Qt 軟體黑底黑字問題
+  # ⭐️ 解決 Qt 軟體黑底黑字問題
   qt = {
     enable = true;
     platformTheme = "gnome";
     style = "adwaita-dark";
   };
 
-  # ⭐️ 允許 wheel 組用戶免輸入密碼直接掛載內接硬碟與 USB
-  # security.polkit.extraConfig = ''
-  #   polkit.addRule(function(action, subject) {
-  #     if ((action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
-  #          action.id == "org.freedesktop.udisks2.filesystem-mount") &&
-  #         subject.isInGroup("wheel")) {
-  #       return polkit.Result.YES;
-  #     }
-  #   });
-  # '';
-
   nix.settings = {
-    # 同時下載的任務數 (根據你的 CPU 核心數設定，建議 4-8) 1
     max-jobs = 16;
-    
-    # 每個任務開啟的並行連接數 (這就是你要的多線程加速！)
     http-connections = 50; 
-    
-    # 如果下載速度低於這個位元組/秒，持續一段時間就放棄 (防止卡死)
     min-free = 128000000;
-    
-    # ⭐️ 核心黑科技：開啟二進位快取信任與替換
-    auto-optimise-store = true; # 自動清理 /nix/store 中的重複檔案，極大節省硬碟空間！
-    
-    # 信任的額外快取服務器（讓 Nix 自動下載別人編譯好的現成包）
+    auto-optimise-store = true;
     trusted-users = [ "root" "rhys" ];
   };
   
-  # ⭐️ 強制關閉 Wi-Fi 晶片省電，維持網卡隨時全速發射
+  # ⭐️ 強制關閉 Wi-Fi 晶片省電
   networking.networkmanager.wifi.powersave = false;
   
-  # 1. 載入 BBR 核心模組
+  # 載入 BBR 核心模組
   boot.kernelModules = [ "tcp_bbr" ];
-    # ⚡ 阻止 PCIe 链路进入主动电源管理 (ASPM) 省电状态，彻底根治 PCIe WiFi 延迟抖动与断流
+
+  # ⚡ 核心参数调优（加入了 NVMe 防掉盘/防卡死参数）
   boot.kernelParams = [ 
     "pcie_aspm=off"
     "vt.global_cursor_default=0"
-    "pcie_ports=compat"           # 强制兼容旧版 PCIe 唤醒重置
-    "mt7925e.disable_aspm=1"      # 专门针对 MT7925 驱动禁用省电机制
+    "pcie_ports=compat"
+    "mt7925e.disable_aspm=1"
+    "nvme_core.default_ps_max_latency_us=0" # ⭐️ 彻底防止 NVMe 固态高负载 I/O 超时断联
   ];
-  # 1. 彻底禁用不用的博通网卡驱动（黑名单），防止干扰 PCIe 总线唤醒
+
   boot.blacklistedKernelModules = [ "bcma" "b43" ];
-  # 3. 睡眠唤醒无痛解耦（仅针对 MT7925 优化）
+
+  # 睡眠唤醒解耦
   powerManagement = {
     enable = true;
-    
-    # 睡眠前：在总线断电前，安全卸载 MT7925 驱动
     powerDownCommands = ''
       /run/current-system/sw/bin/modprobe -r mt7925e || true
     '';
-    
-    # 唤醒后：通电稳定后硬加载驱动，并重置网络
     resumeCommands = ''
-      # 延迟 2 秒，给联发科 Wi-Fi 7 芯片充裕的初始化时间
       /run/current-system/sw/bin/sleep 2
       /run/current-system/sw/bin/modprobe mt7925e || true
-      # 强行刷新 NetworkManager 和 DHCP 缓存
       /run/current-system/sw/bin/systemctl restart NetworkManager
     '';
   };
 
-
-  # 2. 核心 TCP / 網路堆疊終極調優
+  # TCP / 網路堆疊調優
   boot.kernel.sysctl = {
-
-    # 只有在記憶體快用盡時才動用硬碟 Swap，平時完全利用高速 RAM
     "vm.swappiness" = 10;
-    
-    # ⭐️ 啟用 BBR + FQ 排隊調度演算法
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
-
-    # ⭐️ 啟用 TCP Fast Open (TFO)：握手時直接附帶資料，省去 1 個 RTT 往返延遲
     "net.ipv4.tcp_fastopen" = 3;
-
-    # ⭐️ 關閉「閒置後慢啟動」：
-    # 瀏覽網頁時，如果停在某個頁面幾秒沒點，TCP 不會降低發送速度，點下一個連結依然保持滿速！
     "net.ipv4.tcp_slow_start_after_idle" = 0;
-
-    # 提高 TIME_WAIT 連接的重複利用率，高並發網頁瀏覽更順暢
     "net.ipv4.tcp_tw_reuse" = 1;
     "net.ipv4.tcp_fin_timeout" = 15;
-
-    # 擴大網路最大緩衝區（現代百兆/千兆寬頻必備）
     "net.core.rmem_max" = 16777216;
     "net.core.wmem_max" = 16777216;
     "net.ipv4.tcp_rmem" = "4096 87380 16777216";
     "net.ipv4.tcp_wmem" = "4096 65536 16777216";
   };
   
-  
-  # 補回這一行，讓系統環境支援 Fish 作為登入 Shell
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
-      # ⭐️ copyfile 專屬補全 (啟動時強制載入)
       complete -c copyfile -s u -l uri -d "使用 text/uri-list 格式 (瀏覽器/Discord)"
       complete -c copyfile -s h -l help -d "顯示幫助訊息"
     '';
+    shellInit = ''
+      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    '';
   };
 
-  # 修复 Dolphin 非 KDE 环境下找不到打开方式/系统列表的 Bug
+  # 修复 Dolphin 打开方式
   environment.etc."xdg/menus/applications.menu".source = "${pkgs.kdePackages.plasma-workspace}/etc/xdg/menus/plasma-applications.menu";
 
-
-  programs.fish.shellInit = ''
-    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-  '';
-  # Fish 代理proxy命令循环
   environment.etc."fish/functions/proxy.fish".text = ''
     function proxy
         if test (count $argv) -eq 0
-            # 無參數：清理
             set -e http_proxy
             set -e https_proxy
             set -e all_proxy
             echo "Proxy environment cleared. Welcome back to nature."
         else
-            # 有參數：設定代理
             set -gx http_proxy http://127.0.0.1:$argv[1]
             set -gx https_proxy http://127.0.0.1:$argv[1]
             set -gx all_proxy socks5://127.0.0.1:$argv[1]
@@ -203,23 +158,18 @@
     end
   '';
 
-  # 1. 關閉 GNOME 內建的 SSH 代理，避免與 GnuPG 衝突
   services.gnome.gcr-ssh-agent.enable = false;
-    # 確保硬碟掛載功能正常 (Thunar 必備)
   services.gvfs.enable = true; 
   services.tumbler.enable = true;
 
-  # 配置 Git 全域設定
+  # Git 全域設定
   programs.git = {
     enable = true;
     config = {
       user.name = "kevin lee";
       user.email = "e3e0261f@pm.me";
-      # 使用你的 GPG Key ID
       user.signingkey = "31C81A9DE1AB870A8EDC3486D7C2DF9FA0283056";
-      # 開啟自動簽名 commit，這樣 GitHub 會顯示 "Verified"
       commit.gpgsign = true;
-      # 解決 init 時的預設分支問題
       init.defaultBranch = "main";
     };
   };
@@ -231,36 +181,30 @@
     "pnpm-10.29.2"
   ];
 
-  # Bootloader & LUKS
+  # Bootloader (✅ 已彻底删除原有的 boot.initrd.luks 加密依赖行)
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.initrd.luks.devices."luks-911433c6-a309-4bb3-9ebb-109b6fedcf6b".device = "/dev/disk/by-uuid/911433c6-a309-4bb3-9ebb-109b6fedcf6b";
 
   # --- 2. 網路與系統服務 ---
   networking.hostName = "nixos";
   networking.networkmanager = {
     enable = true;
-    # 👈 修正为官方标准的选项名称
     connectionConfig = {
       "ipv4.route-metric" = 100;
       "ipv6.route-metric" = 100;
     };
   };
 
-  # /etc/nixos/configuration.nix
   security.pam.loginLimits = [
-    # 允许音频线程使用实时优先级 (95)
     { domain = "@audio"; item = "rtprio"; type = "-"; value = "95"; }
-    # 允许音频锁死内存，绝不允许交换到 Swap 磁盘产生卡顿
     { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
     { domain = "@audio"; item = "nice"; type = "-"; value = "-19"; }
   ];
 
-
-  services.udisks2.enable = true;     # 硬碟自動掛載
-  security.polkit.enable = true;      # 權限認證核心
-  services.printing.enable = true;    # 列印服務
-  services.flatpak.enable = true;     # 啟用 Flatpak 支援
+  services.udisks2.enable = true;
+  security.polkit.enable = true;
+  services.printing.enable = true;
+  services.flatpak.enable = true;
 
   # --- 3. 語系與區域設定 ---
   time.timeZone = "Asia/Taipei";
@@ -275,17 +219,15 @@
     LC_PAPER = "zh_TW.UTF-8";
     LC_TELEPHONE = "zh_TW.UTF-8";
     LC_TIME = "zh_TW.UTF-8";
-    LC_MESSAGES = "zh_TW.UTF-8";  # ⭐️ 核心 1：強制所有軟體選單和介面文字使用中文！
+    LC_MESSAGES = "zh_TW.UTF-8";
   };
-    # 确保 EasyEffects 所需的 UI 翻译支持已包含在系统支持的语言包中
   i18n.supportedLocales = [
     "en_US.UTF-8/UTF-8"
     "zh_TW.UTF-8/UTF-8"
     "zh_CN.UTF-8/UTF-8"
   ];
-    # ⭐️ LANGUAGE 是環境變數，要獨立寫在外面（注意結尾都有分號）！
+
   environment.sessionVariables = {
-    # 確保 KDE 軟體能精準找到 NixOS 的所有 .desktop 啟動項
     XDG_DATA_DIRS = [
       "/run/current-system/sw/share"
       "/etc/profiles/per-user/rhys/share"
@@ -293,44 +235,35 @@
       "/home/rhys/.local/share"
     ];
     LANGUAGE = "zh_TW:zh_CN:zh:en";
-    # ⭐️ 补上这三行，强制所有 Qt/GTK 应用走原生 Wayland，并修复 Dolphin 在独立 WM 下的缩放和主题
     QT_QPA_PLATFORM = "wayland;xcb";
     GDK_BACKEND = "wayland,x11,*";
     ANKI_WAYLAND = "1";
-    DIRENV_LOG_FORMAT = ""; # 干净终端
+    DIRENV_LOG_FORMAT = "";
     QS_ICON_THEME = "Papirus-Dark";
-    # ⭐️ 强力将 Chromium 变黑：启用原生深色主题，并强制将所有普通网页转换为黑暗模式
-    CHROMIUM_FLAGS = [
-      "--enable-features=WebUIDarkMode,Vulkan,DefaultANGLEVulkan"
-      "--use-angle=vulkan"
-      "--enable-gpu-rasterization"
-      "--enable-zero-copy"
-      "--ignore-gpu-blocklist"
-      "--force-dark-mode"
-      "--enable-blink-features=ForceDarkMode"
-    ];
   };
 
-  
-  # 字體
-  fonts.packages = with pkgs; [
-    # 1. 现代无衬线西文字体（开源版 Apple SF Pro）
-    inter
-    # 2. 极客代码与终端等宽字体（自带全套开发图标）
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.symbols-only   # 补全所有缺失的特殊符号
-    # 3. 中文支持（黑体/苹方平替）
-    noto-fonts-cjk-sans
-    # 4. 彩色 Emoji 表情
-    noto-fonts-color-emoji
-    # 5. 网页与状态栏图标字库 (Font Awesome 6)
-    font-awesome
-  ];
+  # ⭐️ 字體設定（包含排版引擎預設優先級）
+  fonts = {
+    packages = with pkgs; [
+      inter                     # 现代无衬线西文字体（开源版 Apple SF Pro）
+      nerd-fonts.jetbrains-mono # 终端等宽字体
+      nerd-fonts.symbols-only   # 符号字库补全
+      noto-fonts-cjk-sans       # 中文支持
+      noto-fonts-color-emoji    # Emoji 表情
+      font-awesome              # 网页与状态栏图标
+    ];
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        sansSerif = [ "Inter" "Noto Sans CJK SC" "Noto Color Emoji" ];
+        monospace = [ "JetBrainsMono Nerd Font" "Noto Sans CJK SC" ];
+        emoji = [ "Noto Color Emoji" ];
+      };
+    };
+  };
 
   # --- 4. 桌面環境與圖形介面 ---
-  # 同時保留 GNOME (穩定) 與 Hyprland (美觀)
   services.displayManager.gdm.enable = true;
-  # services.desktopManager.gnome.enable = true;
 
   programs.hyprland = {
     enable = true;
@@ -343,17 +276,17 @@
     VISUAL = "hx";
   };
 
-  # 💡 啟用系統級 Fcitx5，並打包 Rime 引擎與 Nord 皮膚
+  # Fcitx5 輸入法
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
-    fcitx5.waylandFrontend = true; # 👈 原生 Wayland 支持，永不報錯
+    fcitx5.waylandFrontend = true;
     fcitx5.addons = with pkgs; [
       fcitx5-gtk
-      fcitx5-rime                      # 👈 核心：Rime 引擎
+      fcitx5-rime
       qt6Packages.fcitx5-chinese-addons
-      fcitx5-nord                      # 👈 Nord 深色皮膚
-      kdePackages.fcitx5-qt # ⭐️ 解决 Qt6 下 Fcitx 托盘通讯的关键
+      fcitx5-nord
+      kdePackages.fcitx5-qt
     ];
   };
 
@@ -365,30 +298,17 @@
     ];
     config = {
       common = {
-        # 強制讓檔案選擇對話框使用 xapp 或者是 gtk 
         "org.freedesktop.impl.portal.FileChooser" = [ "xapp" "gtk" ];
       };
     };
-    configPackages = [ pkgs.hyprland ]; # 👈 确保 Portal 能准确读取到 Hyprland 的特定行为配置
+    configPackages = [ pkgs.hyprland ];
     config.common.default = "*"; 
   };
 
-
-  # programs.waybar.enable = true;
   services.hypridle.enable = true;
   programs.hyprlock.enable = true;
 
-  # # 音效設定 (Pipewire)
-  # services.pulseaudio.enable = false;
-  # security.rtkit.enable = true;
-  # services.pipewire = {
-  #   enable = true;
-  #   alsa.enable = true;
-  #   alsa.support32Bit = true;
-  #   pulse.enable = true;
-  # };
-
-  # 解決「無法請求認證」的問題：在 Hyprland 下啟動 Polkit GNOME
+  # Polkit GNOME
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     description = "polkit-gnome-authentication-agent-1";
     wantedBy = [ "graphical-session.target" ];
@@ -411,20 +331,18 @@
     shell = pkgs.fish;
   };
 
-
-    # 2. 確保 GnuPG Agent 負責 SSH
   programs.gnupg.agent = {
     enable = true;
-    enableSSHSupport = true; # 讓 GPG 密鑰也能當 SSH 密鑰用
+    enableSSHSupport = true;
     pinentryPackage = pkgs.pinentry-gnome3;
   };
   
-  # --- 6. 軟體安裝清單 (整合你之前 nix profile 的所有軟體) ---
+  # --- 6. 軟體安裝清單 ---
   environment.systemPackages = with pkgs; [
     (discord.override {
       withOpenASAR = true;
     })
-        # 1. 救磚與終端必備
+    # 1. 救磚與終端必備
     vim neovim git wget curl unzip
     procps lvm2 p7zip unrar
     polkit_gnome networkmanagerapplet
@@ -432,8 +350,7 @@
     usbutils esptool espflash tio opensc
     mpv
     
-    # 2. 桌面與視窗管理器核心組件 (沒有它們進不去桌面)
-    # fuzzel waybar mako
+    # 2. 桌面與視窗管理器核心組件
     hyprlauncher hyprshutdown
     hypridle hyprlock hyprpaper hyprpicker
     pamixer ddcutil brightnessctl libcava lm_sensors aubio
@@ -442,16 +359,12 @@
     qt6.qtbase
     qt6.qtimageformats
     qt6.qtdeclarative
-    qt6.qtimageformats
     qt6.qtshadertools
     swappy bash fish ninja glibc libgcc
-    # Caelestia 官方图标库
     papirus-icon-theme
-    # Caelestia Shell 所需的基础小部件依赖
-    brightnessctl    # 亮度控制滑块
-    playerctl        # 媒体播放控制与歌词
-    wireplumber      # Pipewire 音频控制
-    networkmanager   # Wi-Fi 控制面板
+    playerctl
+    wireplumber
+    networkmanager
     
     # 3. 基礎圖形支撐
     wl-clipboard grim slurp translate-shell
@@ -462,12 +375,8 @@
     
     # 5. 專屬自訂工具
     appimage-run
-    ];
-    
-  # 他在代碼裡定義的開關，你直接拿來用
-  #services.cool-hyprland.enable = true;
-  #services.cool-hyprland.theme = "neon-purple";
+  ];
+
   # --- 7. 系統版本 ---
-  # 除非重大升級，否則不要改動此值
   system.stateVersion = "24.11";
 }

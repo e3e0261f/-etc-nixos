@@ -18,6 +18,7 @@
       fsType = "xfs";
     };
 
+  # 保留根目录加密（直到你后续用 TF 卡彻底重装），但不再加密 Swap
   boot.initrd.luks.devices."luks-75209cac-04f0-490b-a870-d5a475a908a7".device = "/dev/disk/by-uuid/75209cac-04f0-490b-a870-d5a475a908a7";
 
   fileSystems."/boot" =
@@ -26,9 +27,8 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  swapDevices =
-    [ { device = "/dev/mapper/luks-911433c6-a309-4bb3-9ebb-109b6fedcf6b"; }
-    ];
+  # ✅ 彻底禁用物理硬盘加密 Swap，全权交给内存 zramSwap
+  swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
