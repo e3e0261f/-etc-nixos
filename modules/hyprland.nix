@@ -245,34 +245,34 @@
             layout = "dwindle",
         },
 
+        -- 找到第 166 行左右的 decoration 配置塊：
         decoration = {
-            rounding       = 12,
-            rounding_power = 2,
+            rounding       = 16,    -- 👈 建议从 12 提升至 14~16（苹果标准大圆角）
+            rounding_power = 4.0,   -- 👈 ⭐️ 核心关键！把 2 改为 4.0（正式激活 Apple G2 Squircle 超椭圆曲线！）
 
-            -- ⭐️ 核心解鎖 1：視窗 100% 清澈透亮，非當前視窗絕不變透明！
+            -- 视窗 100% 清澈透亮
             active_opacity   = 1.0,
             inactive_opacity = 1.0,
 
-            -- ⭐️ 核心解鎖 2：徹底幹掉暗淡，背景視窗永遠保持原汁原味亮度！
             dim_inactive = false,
             dim_strength = 0.0,
 
-            -- ⭐️ 高級漫射環境光陰影
+            -- 漫射环境光阴影
             shadow = {
                 enabled      = true,
-                range        = 18,
-                render_power = 3,
+                range        = 25,  -- 稍微增大弥散范围
+                render_power = 4,   -- 提升阴影层次
                 color        = 0x44000000,
             },
 
-            -- ⭐️ 3 遍極致深邃的 Kawase 磨砂毛玻璃
+            -- 3 遍极深 Kawase 磨砂毛玻璃
             blur = {
                 enabled   = true,
-                size      = 6,
+                size      = 7,
                 passes    = 3,
                 new_optimizations = true,
                 ignore_opacity    = true,
-                vibrancy          = 0.2,
+                vibrancy          = 0.25,
             },
         },
 

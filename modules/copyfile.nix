@@ -29,63 +29,100 @@ let
             "📋 剪貼簿已就緒" "$1\n$2"
     }
 
-    # 1. 檢查參數是否為空
+    # 0. 顯示幫助
+    show_help() {
+        echo "用法:"
+        echo "  copyfile <檔案>             - 原樣複製到剪貼簿"
+        echo "  copyfile -t <檔案>          - 自動追加 .txt 後綴複製 (Apple 懶人模式)"
+        echo "  copyfile <檔案> .txt        - 自動追加 .txt 後綴"
+        echo "  copyfile <檔案> <新檔名>    - 自訂完整新檔名複製"
+    }
+
     if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-        notify_err "未指定檔案！用法: copyfile <檔案> [新檔名]"
+        show_help
+        exit 0
     fi
 
     MIME_TYPE="text/uri-list"
     MODE_NAME="可在 Dolphin / Discord / 瀏覽器 直接 Ctrl+V 貼上"
 
-    # 2. 改名複製模式 (剛好 2 個參數，前存在，後不存在)
-    if [ $# -eq 2 ] && [ -e "$1" ] && [ ! -e "$2" ]; then
-        SRC_FILE="$1"
-        NEW_NAME="$2"
-        SRC_ABS="$(${pkgs.coreutils}/bin/realpath "$SRC_FILE" 2>/dev/null)" || notify_err "無法解析檔案路徑: $SRC_FILE"
-
-        TARGET_PATH="$CACHE_DIR/$NEW_NAME"
-        rm -f "$TARGET_PATH"
-        cp -L "$SRC_ABS" "$TARGET_PATH" || notify_err "無法將檔案寫入暫存快取"
-
-        if echo "file://$TARGET_PATH" | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list; then
-            notify_ok "已改名複製：$(basename "$SRC_FILE") ➜ $NEW_NAME" "$MODE_NAME"
-            exit 0
-        else
-            notify_err "寫入 Wayland 剪貼簿失敗！"
-        fi
+    AUTO_TXT=0
+    # 檢查是否啟用 -t 或 --txt 標籤
+    if [ "$1" = "-t" ] || [ "$1" = "--txt" ]; then
+        AUTO_TXT=1
+        shift
     fi
 
-    # 3. 常規多檔案複製模式：先嚴格檢查所有檔案是否存在
+    SRC_FILE="$1"
+    [ ! -e "$SRC_FILE" ] && notify_err "找不到來源檔案: $SRC_FILE"
+
+    SRC_ABS="$(${pkgs.coreutils}/bin/realpath "$SRC_FILE" 2>/dev/null)" || notify_err "無法解析檔案路徑: $SRC_FILE"
+    SRC_BASE="$(basename "$SRC_FILE")"
+
+    # 1. 處理 -t 模式 (copyfile -t foo.nix -> foo.nix.txt)
+    if [ "$AUTO_TXT" -eq 1 ]; then
+        TARGET_NAME="''${SRC_BASE}.txt"
+        TARGET_PATH="$CACHE_DIR/$TARGET_NAME"
+        rm -f "$TARGET_PATH"
+        cp -L "$SRC_ABS" "$TARGET_PATH" || notify_err "無法寫入暫存快取"
+
+        echo "file://$TARGET_PATH" | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list
+        notify_ok "已自動轉為 TXT：$SRC_BASE ➜ $TARGET_NAME" "$MODE_NAME"
+        exit 0
+    fi
+
+    # 2. 處理後綴快捷模式 (copyfile foo.nix .txt -> foo.nix.txt)
+    if [ $# -eq 2 ] && [[ "$2" =~ ^\.[a-zA-Z0-9]+$ ]]; then
+        TARGET_NAME="''${SRC_BASE}$2"
+        TARGET_PATH="$CACHE_DIR/$TARGET_NAME"
+        rm -f "$TARGET_PATH"
+        cp -L "$SRC_ABS" "$TARGET_PATH" || notify_err "無法寫入暫存快取"
+
+        echo "file://$TARGET_PATH" | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list
+        notify_ok "已追加後綴：$SRC_BASE ➜ $TARGET_NAME" "$MODE_NAME"
+        exit 0
+    fi
+
+    # 3. 自訂完整改名模式 (copyfile foo.nix newname.txt)
+    if [ $# -eq 2 ] && [ ! -e "$2" ]; then
+        TARGET_NAME="$2"
+        TARGET_PATH="$CACHE_DIR/$TARGET_NAME"
+        rm -f "$TARGET_PATH"
+        cp -L "$SRC_ABS" "$TARGET_PATH" || notify_err "無法寫入暫存快取"
+
+        echo "file://$TARGET_PATH" | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list
+        notify_ok "已改名複製：$SRC_BASE ➜ $TARGET_NAME" "$MODE_NAME"
+        exit 0
+    fi
+
+    # 4. 常規多檔案原名複製模式
     for file in "$@"; do
-        if [ ! -e "$file" ]; then
-            notify_err "找不到檔案：$file"
-        fi
+        [ ! -e "$file" ] && notify_err "找不到檔案：$file"
     done
 
-    # 寫入剪貼簿
-    if {
+    {
         for file in "$@"; do
             echo "file://$(${pkgs.coreutils}/bin/realpath "$file")"
         done
-    } | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list; then
-        if [ $# -eq 1 ]; then
-            notify_ok "已複製檔案：$(basename "$1")" "$MODE_NAME"
-        else
-            notify_ok "已批次複製 $# 個檔案到剪貼簿！" "$MODE_NAME"
-        fi
+    } | ${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list
+
+    if [ $# -eq 1 ]; then
+        notify_ok "已複製檔案：$SRC_BASE" "$MODE_NAME"
     else
-        notify_err "寫入 Wayland 剪貼簿失敗！"
+        notify_ok "已批次複製 $# 個檔案到剪貼簿！" "$MODE_NAME"
     fi
   '';
 in
 {
-  home.packages = [
+   home.packages = [
     copyfile
     pkgs.libnotify
     pkgs.wl-clipboard
   ];
 
-  xdg.configFile."fish/completions/copyfile.fish".text = ''
+  # ⭐️ 為 Fish 提供絲滑的自動補全
+  programs.fish.interactiveShellInit = ''
+    complete -c copyfile -s t -l txt -d "自動追加 .txt 並複製 (Apple 懶人模式)"
     complete -c copyfile -s h -l help -d "顯示幫助訊息"
     complete -c copyfile -F
   '';
