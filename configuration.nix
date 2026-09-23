@@ -19,7 +19,7 @@
     ./modules/ssh.nix
   ];
 
-  system.nixos.tags = [ "0923" ];
+  system.nixos.tags = [ "no-luks" ];
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
   services.xserver.videoDrivers = [ "amdgpu" ];
