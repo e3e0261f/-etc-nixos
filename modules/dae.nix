@@ -178,7 +178,7 @@ in
 
           # Mega.nz 專用高速通道
           domain(suffix: mega.nz) -> premium_high
-          pname(discord) -> premium_high
+          pname(discord, git) -> premium_high
           domain(geosite:discord) -> premium_high
 
           # ⭐️【終極兜底】：預設走 1倍 cheap 省錢池！（非常明智的改動！）
