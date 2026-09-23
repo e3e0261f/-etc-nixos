@@ -66,7 +66,6 @@ in
         routing {
           request {
             qname(geosite:cn) -> ali_h3
-            qname(geosite:github) -> ali_h3
             fallback: cf_doh3_domains
           }
         }
@@ -78,9 +77,9 @@ in
       group {
           # 1. 大流量省錢池：排除 4倍、6倍、公告、香港
           cheap {
-              # policy: min_moving_avg
+              policy: min_moving_avg
               # policy: random
-              policy: fixed(2)
+              # policy: fixed(2)
               filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期')
           }
 
@@ -100,9 +99,9 @@ in
           
           # 3. 4倍/6倍 專用池：專門用來救急
           premium_high {
-              # policy: min_moving_avg
+              policy: min_moving_avg
               # policy: random
-              policy: fixed(1)
+              # policy: fixed(1)
               filter: subtag(my_sub) && name(regex: '4倍|6倍') && !name(regex: '剩余|到期')
           }
       }
@@ -170,6 +169,7 @@ in
           domain(geosite:netflix) -> cheap
           domain(geosite:bilibili@!cn) -> cheap
           domain(geosite:spotify) -> cheap
+          domain(geosite:github) -> cheap
 
           # ⭐️【第 5 級】：阻斷普通網站的 QUIC (UDP 443) 享受 TCP 代理加速
           l4proto(udp) && dport(443) -> block
