@@ -76,9 +76,9 @@ in
       # =======================================================
       group {
           # 1. 大流量省錢池：排除 4倍、6倍、公告、香港
-          cheap {
-              policy: min_moving_avg
-              # policy: random
+          for146 {
+              # policy: min_moving_avg
+              policy: random
               # policy: fixed(2)
               filter: subtag(my_sub) && !name(regex: '4倍|6倍|剩余|到期')
           }
@@ -87,18 +87,20 @@ in
           google_ai {
               policy: min_moving_avg
               # policy: fixed(1)
-              filter: subtag(my_sub) && !name(regex: 'HK|Hong Kong|香港|广州|剩余|到期|4倍|6倍|BGP')
+              # policy: random
+              filter: subtag(my_sub) && !name(regex: 'HK|香港|广州|剩余|到期|4倍|6倍|BGP')
           }
 
           # 4倍
           for4 {
               policy: min_moving_avg
+              # policy: random
               # policy: fixed(1)
               filter: subtag(my_sub) && name(regex: '4倍') && !name(regex: '剩余|到期')
           }
           
           # 3. 4倍/6倍 專用池：專門用來救急
-          premium_high {
+          for46 {
               policy: min_moving_avg
               # policy: random
               # policy: fixed(1)
@@ -114,10 +116,10 @@ in
           # 1. 阿爾比恩全流量直連放行（交給路由器 UU 加速器專線處理！）
           pname(Albion-Online, Albion-Online.bin, albion-online) -> direct(must)
           domain(suffix: albiononline.com) -> direct(must)
-          domain(suffix: githubusercontent.com) -> cheap
+          domain(suffix: githubusercontent.com) -> for146
 
           pname(gix, aria2c, steam) -> direct(must)
-          pname(nix-daemon) -> cheap
+          pname(nix-daemon) -> for146
 
           # 3. 國內 DNS (阿里) 與核心防回環
           dip(223.5.5.5, 223.6.6.6) -> direct(must)
@@ -161,26 +163,25 @@ in
           domain(suffix: generativelanguage.googleapis.com) -> google_ai
           domain(suffix: clients6.google.com) -> google_ai
 
-          # ⭐️【第 4 級】：大流量大數據專區（鎖死在 cheap 池，嚴禁 4倍/6倍）
-          domain(geosite:youtube) -> cheap
-          domain(geosite:steam) -> cheap
-          domain(geosite:docker) -> cheap
-          domain(geosite:telegram) -> cheap
-          domain(geosite:netflix) -> cheap
-          domain(geosite:bilibili@!cn) -> cheap
-          domain(geosite:spotify) -> cheap
-          domain(geosite:github) -> cheap
+          # ⭐️【第 4 級】：大流量大數據專區（鎖死在 for146 池，嚴禁 4倍/6倍）
+          domain(geosite:youtube) -> for146
+          domain(geosite:steam) -> for146
+          domain(geosite:docker) -> for146
+          domain(geosite:telegram) -> for146
+          domain(geosite:netflix) -> for146
+          domain(geosite:bilibili@!cn) -> for146
+          domain(geosite:spotify) -> for146
+          domain(geosite:github) -> for146
 
           # ⭐️【第 5 級】：阻斷普通網站的 QUIC (UDP 443) 享受 TCP 代理加速
           l4proto(udp) && dport(443) -> block
 
           # Mega.nz 專用高速通道
-          domain(suffix: mega.nz) -> premium_high
-          pname(discord) -> premium_high
-          domain(geosite:discord) -> premium_high
+          domain(suffix: mega.nz) -> for46
+          pname(discord) -> for4
 
-          # ⭐️【終極兜底】：預設走 1倍 cheap 省錢池！（非常明智的改動！）
-          fallback: cheap
+          # ⭐️【終極兜底】：預設走 1倍 for146 省錢池！（非常明智的改動！）
+          fallback: for146
       }
     '';
   };
