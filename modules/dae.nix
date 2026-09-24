@@ -177,8 +177,8 @@ in
           l4proto(udp) && dport(443) -> block
 
           # Mega.nz 專用高速通道
-          domain(suffix: mega.nz) -> for46
-          pname(discord) -> for4
+          domain(suffix: mega.nz) -> for146
+          pname(discord) -> for146
 
           # ⭐️【終極兜底】：預設走 1倍 for146 省錢池！（非常明智的改動！）
           fallback: for146
